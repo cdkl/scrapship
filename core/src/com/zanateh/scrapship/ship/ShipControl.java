@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.zanateh.scrapship.ship.component.ComponentThruster;
 import com.zanateh.scrapship.ship.component.ThrustAction;
 
-public class ShipControl {
+public class ShipControl implements IShipControl {
 	
 	private float forwardThrust = 0;
 	public ArrayList<ComponentThruster> forwardThrusters = new ArrayList<ComponentThruster>();
@@ -16,6 +16,7 @@ public class ShipControl {
 	private float rightThrust = 0;
 	public ArrayList<ComponentThruster> rightThrusters = new ArrayList<ComponentThruster>();
 	
+	@Override
 	public void setForwardThrust(float thrust) {
 		forwardThrust = thrust;
 		for(ComponentThruster thruster : forwardThrusters) {
@@ -23,6 +24,7 @@ public class ShipControl {
 		}
 	}
 
+	@Override
 	public void setReverseThrust(float thrust) {
 		reverseThrust = thrust;
 		for(ComponentThruster thruster : reverseThrusters) {
@@ -30,20 +32,16 @@ public class ShipControl {
 		}
 	}
 	
+	@Override
 	public void setLeftThrust(float thrust) {
-		leftThrust = thrust;
-		for(ComponentThruster thruster : leftThrusters) {
-			thruster.addAction(new ThrustAction(thrust));
-		}
 	}
 	
+	@Override
 	public void setRightThrust(float thrust) {
-		rightThrust = thrust;
-		for(ComponentThruster thruster : rightThrusters) {
-			thruster.addAction(new ThrustAction(thrust));
-		}
+
 	}
 
+	@Override
 	public void remove() {
 		forwardThrusters.clear();		
 		reverseThrusters.clear();
@@ -53,5 +51,21 @@ public class ShipControl {
 	
 	public void dispose() {
 		remove();
+	}
+
+	@Override
+	public void setCCWThrust(float thrust) {
+		leftThrust = thrust;
+		for(ComponentThruster thruster : leftThrusters) {
+			thruster.addAction(new ThrustAction(thrust));
+		}
+	}
+
+	@Override
+	public void setCWThrust(float thrust) {
+		rightThrust = thrust;
+		for(ComponentThruster thruster : rightThrusters) {
+			thruster.addAction(new ThrustAction(thrust));
+		}
 	}
 }
