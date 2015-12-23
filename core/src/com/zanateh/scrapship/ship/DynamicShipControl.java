@@ -2,6 +2,7 @@ package com.zanateh.scrapship.ship;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.zanateh.scrapship.ship.component.ComponentThruster;
 import com.zanateh.scrapship.ship.component.ThrustAction;
@@ -62,6 +63,7 @@ public class DynamicShipControl implements IShipControl {
 				thruster.getComponent().transformVectorToParent(thrustVector);
 				
 				if( desiredDirection.dot(thrustVector) > 0 ) {
+					Gdx.app.log("Thruster", "Firing " + thruster.toString() + " to " + thrust);
 					thruster.addAction(new ThrustAction(thrust));
 				}	
 			}		
@@ -89,6 +91,7 @@ public class DynamicShipControl implements IShipControl {
 				
 				float torque = momentArm.crs(thrustVector);
 				if(torque * desiredDirection > 0) {
+					Gdx.app.log("Thruster", "Firing " + thruster.toString() + " to " + thrust);
 					thruster.addAction(new ThrustAction(thrust));
 				}
 				

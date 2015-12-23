@@ -1,6 +1,7 @@
 package com.zanateh.scrapship.state;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -64,11 +65,24 @@ public class PlayState extends GameState implements IWorldSource, IStageSource {
 		cameraManager.setCameraMode(CameraManager.CameraMode.Target);
 		cameraManager.setTarget(ship1);		
 		
-		ComponentShip ship2 = shipFactory.createShip(
-				ComponentShipFactory.ShipType.DebugShip);
-		ship2.setPosition(new Vector2(8,4.4f));
-		ship2.setVelocity(new Vector2(-1,0));
-		shipList.add(ship2);
+		Random rand = new Random();
+		rand.setSeed(1);
+		
+		float distRange = 10;
+		
+		for( int i = 0; i < 10; ++i ) {
+			ComponentShip randomShip = shipFactory.createShip(ComponentShipFactory.ShipType.RandomShip);
+			randomShip.setPosition(new Vector2((float)rand.nextGaussian() * distRange, (float) rand.nextGaussian() * distRange ));
+			randomShip.setRotation(rand.nextInt(360));
+			shipList.add(randomShip);
+		}
+		
+		
+//		ComponentShip ship2 = shipFactory.createShip(
+//				ComponentShipFactory.ShipType.DebugShip);
+//		ship2.setPosition(new Vector2(8,4.4f));
+//		ship2.setVelocity(new Vector2(-1,0));
+//		shipList.add(ship2);
 		
 		stage.setShipControl(ship1.getShipControl());
 	}

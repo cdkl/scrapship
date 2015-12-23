@@ -57,6 +57,7 @@ public class PodComponent extends ScrapShipActorGroup implements ISelectable {
 						   worldPos.y - sprite.getHeight()/2);
 
 		sprite.setRotation( getRotation() );
+		sprite.setAlpha(0.5f);
 		
 		sprite.draw(batch);
 	}
