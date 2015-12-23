@@ -122,7 +122,19 @@ public class PodComponent extends ScrapShipActorGroup implements ISelectable {
 	public ComponentThruster addThruster(Vector2 pos, Vector2 vec, float strength) {
 		ComponentThruster thruster = new ComponentThruster(this, pos, vec, strength);
 		this.addActor(thruster);
+		thrusters.add(thruster);
 		return thruster;
+	}
+	
+	public void removeThruster(ComponentThruster thruster) {
+		if(thrusters.contains(thruster)) {
+			this.removeActor(thruster);
+			thrusters.remove(thruster);
+		}
+	}
+	
+	public ArrayList<ComponentThruster> getThrusters() {
+		return thrusters;
 	}
 	
 	public void attachRelativeComponent(PodComponent component, float offsetX, float offsetY, float rad) {

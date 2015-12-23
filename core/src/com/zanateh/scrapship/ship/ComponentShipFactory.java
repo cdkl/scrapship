@@ -76,25 +76,7 @@ public class ComponentShipFactory {
 				ComponentThruster leftEngineRear = comp1.addThruster(new Vector2(-0.5f,0), new Vector2(0,1), enginePower * 0.1f);
 				ComponentThruster rightEngineRear = comp1.addThruster(new Vector2(-0.5f,0), new Vector2(0,-1), enginePower * 0.1f);
 
-				/*
-				ShipControl shipControl = new ShipControl();
-				shipControl.forwardThrusters.add(mainEngine1);
-//				shipControl.forwardThrusters.add(mainEngine2);
-				shipControl.leftThrusters.add(leftEngineFront);
-				shipControl.leftThrusters.add(rightEngineRear);
-				shipControl.rightThrusters.add(rightEngineFront);
-				shipControl.rightThrusters.add(leftEngineRear);
-				shipControl.reverseThrusters.add(revEngine);
-				*/
-				
 				DynamicShipControl shipControl = new DynamicShipControl(ship);
-				shipControl.addThruster(mainEngine1);
-				shipControl.addThruster(mainEngine2);
-				shipControl.addThruster(revEngine);
-				shipControl.addThruster(leftEngineFront);
-				shipControl.addThruster(rightEngineFront);
-				shipControl.addThruster(leftEngineRear);
-				shipControl.addThruster(rightEngineRear);
 				
 				ship.setShipControl(shipControl);
 			

@@ -15,25 +15,11 @@ public class DynamicShipControl implements IShipControl {
 		this.ship = ship;
 	}
 	
-	public void addThruster(ComponentThruster thruster) {
-		thrusters.add(thruster);
-	}
-	
-	public void removeThruster(ComponentThruster thruster) {
-		thrusters.remove(thruster);
-	}
-	
 	@Override
 	public void remove() {
-		thrusters.clear();
+		this.ship = null;
 	}
 	
-	public void dispose() {
-		remove();
-	}
-	
-
-
 	@Override
 	public void setForwardThrust(float thrust) {
 		_setDirectionalThrustForCompatibleThrusters(thrust, new Vector2(1,0));
@@ -65,45 +51,48 @@ public class DynamicShipControl implements IShipControl {
 		_setRotationalThrustForCompatibleThrusters(thrust, -1);
 		
 	}
-
 	
 	private void _setDirectionalThrustForCompatibleThrusters(float thrust, Vector2 desiredDirection) {		
 
-		for( ComponentThruster thruster : thrusters ) {
-			
-			Vector2 thrustVector = thruster.getThrustVector().cpy();
-			thrustVector.scl(thruster.getStrength());
-			thruster.getComponent().transformVectorToParent(thrustVector);
-			
-			if( desiredDirection.dot(thrustVector) > 0 ) {
-				thruster.addAction(new ThrustAction(thrust));
-			}	
-		}		
+		if( ship != null ) {
+			for( ComponentThruster thruster : ship.getThrusters() ) {
+				
+				Vector2 thrustVector = thruster.getThrustVector().cpy();
+				thrustVector.scl(thruster.getStrength());
+				thruster.getComponent().transformVectorToParent(thrustVector);
+				
+				if( desiredDirection.dot(thrustVector) > 0 ) {
+					thruster.addAction(new ThrustAction(thrust));
+				}	
+			}		
+		}
 	}
 	
 	private void _setRotationalThrustForCompatibleThrusters(float thrust, float desiredDirection) {
-		Vector2 centreOfMass = this.ship.getCenter();
-		
-		for( ComponentThruster thruster : thrusters ) {
-			Vector2 momentArm = thruster.getPosition().cpy();
-			thruster.getComponent().transformPositionToParent(momentArm);
+		if( ship != null ) {
+			Vector2 centreOfMass = this.ship.getCenter();
 			
-			momentArm.sub(centreOfMass);
-			
-			Vector2 thrustVector = thruster.getThrustVector().cpy();
-			thrustVector.scl(thruster.getStrength());
-			thruster.getComponent().transformVectorToParent(thrustVector);
-			
-//			Vector2 parallelComponent = momentArm.cpy();
-//			parallelComponent.scl(thrustVector.dot(momentArm) / momentArm.dot(momentArm) );
-//			Vector2 angularForce = thrustVector.cpy();
-//			angularForce.sub(parallelComponent);
-			
-			float torque = momentArm.crs(thrustVector);
-			if(torque * desiredDirection > 0) {
-				thruster.addAction(new ThrustAction(thrust));
+			for( ComponentThruster thruster : ship.getThrusters() ) {
+				Vector2 momentArm = thruster.getPosition().cpy();
+				thruster.getComponent().transformPositionToParent(momentArm);
+				
+				momentArm.sub(centreOfMass);
+				
+				Vector2 thrustVector = thruster.getThrustVector().cpy();
+				thrustVector.scl(thruster.getStrength());
+				thruster.getComponent().transformVectorToParent(thrustVector);
+				
+	//			Vector2 parallelComponent = momentArm.cpy();
+	//			parallelComponent.scl(thrustVector.dot(momentArm) / momentArm.dot(momentArm) );
+	//			Vector2 angularForce = thrustVector.cpy();
+	//			angularForce.sub(parallelComponent);
+				
+				float torque = momentArm.crs(thrustVector);
+				if(torque * desiredDirection > 0) {
+					thruster.addAction(new ThrustAction(thrust));
+				}
+				
 			}
-			
 		}
 	}
 

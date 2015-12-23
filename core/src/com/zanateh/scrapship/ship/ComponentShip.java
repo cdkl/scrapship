@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.zanateh.scrapship.camera.IHasPosition;
 import com.zanateh.scrapship.scene.ScrapShipActorGroup;
+import com.zanateh.scrapship.ship.component.ComponentThruster;
 import com.zanateh.scrapship.ship.component.PodComponent;
 
 public class ComponentShip extends ScrapShipActorGroup implements IHasPosition {
@@ -115,5 +116,17 @@ public class ComponentShip extends ScrapShipActorGroup implements IHasPosition {
 	
 	public Vector2 getCenter() {
 		return this.body.getLocalCenter();
+	}
+	
+	public ArrayList<ComponentThruster> getThrusters() {
+		ArrayList<ComponentThruster> returnList = new ArrayList<ComponentThruster>();
+		
+		for( Actor actor : this.getChildren() ) {
+			if( actor instanceof PodComponent ) {
+				returnList.addAll(((PodComponent)actor).getThrusters());
+			}
+		}
+		
+		return returnList;
 	}
 }
