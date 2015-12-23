@@ -2,6 +2,7 @@ package com.zanateh.scrapship.ship.component;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -50,23 +51,34 @@ public class ComponentThruster extends ScrapShipActor implements IThrust {
 		return new Vector2(this.getX(), this.getY());
 	}
 	
+	public Vector2 getThrustVector() {
+		return vec;
+	}
+	
+	public float getStrength() {
+		return strength;
+	}
+	
+	public PodComponent getComponent() {
+		return component;
+	}
+	
 	@Override 
 	public void applyThrust(Body body) {		
 		Vector2 shipPos = new Vector2(this.getPosition());
-		component.transformPositionToParent(this.getPosition());
+		component.transformPositionToParent(shipPos);
 		Vector2 shipVec = new Vector2(vec);
 		component.transformVectorToParent(shipVec);
 		
 		body.applyForce(body.getWorldVector(shipVec.scl(strength*power)), body.getWorldPoint(shipPos), true);
 	}
 	
-	public void draw(SpriteBatch batch, float parentAlpha) {
+	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
 	
 		if( power > 0 ) {
 			Vector2 spriteRenderOffset = new Vector2(sprite.getWidth(), sprite.getHeight()/2);
 			Vector2 spriteVec = new Vector2(vec);
-			component.transformVectorToParent(spriteVec);
 			spriteRenderOffset.rotate(spriteVec.angle() + 180);
 					
 			Vector2 spritePos = new Vector2(getPosition());

@@ -1,0 +1,10 @@
+<ComponentShip name="PlayerShip">
+    <PodComponent x=0.0 y=0.0 deg=0>
+        <HardPoint x=0.0 y=0.5/>
+        <HardPoint x=0.0 y=-0.5/>
+        
+        <Thruster name="mainEngine" x=-0.5 y=0.0 vecx=1, vecy=0, pow=5.0/>
+        <Thruster name="revEngine" x=-0.5 y=0.0 vecx=-1, vecy=0, pow=2.0/>
+        
+    </PodComponent>
+</ComponentShip>

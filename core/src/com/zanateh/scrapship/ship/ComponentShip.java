@@ -13,13 +13,14 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.zanateh.scrapship.camera.IHasPosition;
 import com.zanateh.scrapship.scene.ScrapShipActorGroup;
+import com.zanateh.scrapship.ship.component.ComponentThruster;
 import com.zanateh.scrapship.ship.component.PodComponent;
 
 public class ComponentShip extends ScrapShipActorGroup implements IHasPosition {
 
 	private Body body;
 	
-	private ShipControl control = null;
+	private IShipControl control = null;
 	
 	public ComponentShip(World world, Stage stage)
 	{
@@ -57,7 +58,7 @@ public class ComponentShip extends ScrapShipActorGroup implements IHasPosition {
 		super.postUpdate();
 	}
 
-	public void setShipControl(ShipControl control) {
+	public void setShipControl(IShipControl control) {
 
 		if( this.control != null ) {
 			removeControl();
@@ -88,7 +89,7 @@ public class ComponentShip extends ScrapShipActorGroup implements IHasPosition {
 		return new Vector2(this.getX(), this.getY());
 	}
 	
-	public ShipControl getShipControl() {
+	public IShipControl getShipControl() {
 		return this.control;
 	}
 
@@ -111,5 +112,21 @@ public class ComponentShip extends ScrapShipActorGroup implements IHasPosition {
 		if( !hasComponents ) {
 			this.fire(new DestroyShipEvent());
 		}
+	}
+	
+	public Vector2 getCenter() {
+		return this.body.getLocalCenter();
+	}
+	
+	public ArrayList<ComponentThruster> getThrusters() {
+		ArrayList<ComponentThruster> returnList = new ArrayList<ComponentThruster>();
+		
+		for( Actor actor : this.getChildren() ) {
+			if( actor instanceof PodComponent ) {
+				returnList.addAll(((PodComponent)actor).getThrusters());
+			}
+		}
+		
+		return returnList;
 	}
 }

@@ -10,13 +10,13 @@ import com.zanateh.scrapship.camera.CameraManager;
 import com.zanateh.scrapship.scene.ScrapShipStage;
 import com.zanateh.scrapship.ship.ComponentShip;
 import com.zanateh.scrapship.ship.ComponentShipFactory;
-import com.zanateh.scrapship.ship.ShipControl;
+import com.zanateh.scrapship.ship.IShipControl;
 import com.zanateh.scrapship.ship.component.PodComponent;
 
 public class PlayStateInputProcessor extends ScrapShipStage {
 
 	PlayState state;
-	ShipControl shipControl = null;
+	IShipControl shipControl = null;
 	CameraManager cameraManager = null;
 	SelectionManager selectionManager = new SelectionManager(this);
 	
@@ -30,28 +30,36 @@ public class PlayStateInputProcessor extends ScrapShipStage {
 	
 	@Override
 	public boolean keyDown(int keycode) {
-		if( keycode == Input.Keys.D ) {
+		if( keycode == Input.Keys.P ) {
 			if(cameraManager != null ) cameraManager.toggleDebugRender();
 			return true;
 		}
 		
 		if( shipControl != null ) {
-			if( keycode == Input.Keys.UP ) {
+			if( keycode == Input.Keys.W ) {
 				shipControl.setForwardThrust(1);
 				return true;
 			}
-			if( keycode == Input.Keys.DOWN ) {
+			if( keycode == Input.Keys.S ) {
 				shipControl.setReverseThrust(1);
 				return true;
 			}
-			if( keycode == Input.Keys.LEFT ) {
+			if( keycode == Input.Keys.A ) {
+				shipControl.setCCWThrust(1);
+				return true;
+			}	
+			if( keycode == Input.Keys.D ) {
+				shipControl.setCWThrust(1);
+				return true;
+			}
+			if(keycode == Input.Keys.Q ) {
 				shipControl.setLeftThrust(1);
 				return true;
-			}	
-			if( keycode == Input.Keys.RIGHT ) {
+			}
+			if(keycode == Input.Keys.E ) {
 				shipControl.setRightThrust(1);
 				return true;
-			}	
+			}
 		}
 		
 		
@@ -61,19 +69,27 @@ public class PlayStateInputProcessor extends ScrapShipStage {
 	@Override
 	public boolean keyUp(int keycode) {
 		if( shipControl != null ) {
-			if( keycode == Input.Keys.UP ) {
+			if( keycode == Input.Keys.W ) {
 				shipControl.setForwardThrust(0);
 				return true;
 			}
-			if( keycode == Input.Keys.DOWN ) {
+			if( keycode == Input.Keys.S ) {
 				shipControl.setReverseThrust(0);
 				return true;
 			}
-			if( keycode == Input.Keys.LEFT ) {
-				shipControl.setLeftThrust(0);
+			if( keycode == Input.Keys.A ) {
+				shipControl.setCCWThrust(0);
 				return true;
 			}	
-			if( keycode == Input.Keys.RIGHT ) {
+			if( keycode == Input.Keys.D ) {
+				shipControl.setCWThrust(0);
+				return true;
+			}	
+			if(keycode == Input.Keys.Q ) {
+				shipControl.setLeftThrust(0);
+				return true;
+			}
+			if(keycode == Input.Keys.E ) {
 				shipControl.setRightThrust(0);
 				return true;
 			}	
@@ -158,11 +174,11 @@ public class PlayStateInputProcessor extends ScrapShipStage {
 		return true;
 	}
 
-	public void setShipControl(ShipControl shipControl) {
+	public void setShipControl(IShipControl shipControl) {
 		this.shipControl = shipControl;
 	}
 
-	public void removeShipControl(ShipControl shipControl) {
+	public void removeShipControl(IShipControl shipControl) {
 		if(this.shipControl == shipControl) {
 			this.shipControl = null;
 		}
