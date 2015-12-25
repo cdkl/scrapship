@@ -107,20 +107,21 @@ public class ComponentShipFactory {
 	
 	private PodComponent generateRandomPodComponent() {
 		String logString = "--Hardpoints: ";
+		float chanceOfHardpoint = .666f;
 		PodComponent component = new PodComponent();
-		if( rand.nextBoolean() ) {
+		if( rand.nextFloat() <= chanceOfHardpoint ) {
 			component.addHardpoint(new Vector2(0, 0.5f));
 			logString += " +x ";
 		}
-		if( rand.nextBoolean() ) {
+		if( rand.nextFloat() <= chanceOfHardpoint ) {
 			component.addHardpoint(new Vector2(0.5f, 0));
 			logString += " +y ";
 		}
-		if( rand.nextBoolean() ) {
+		if( rand.nextFloat() <= chanceOfHardpoint ) {
 			component.addHardpoint(new Vector2(0, -0.5f));
 			logString += " -x ";
 		}
-		if( rand.nextBoolean() ) {
+		if( rand.nextFloat() <= chanceOfHardpoint ) {
 			component.addHardpoint(new Vector2(-0.5f, 0));
 			logString += " -y ";
 		}

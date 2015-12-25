@@ -1,5 +1,7 @@
 package com.zanateh.scrapship.ship.component;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -11,6 +13,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.zanateh.scrapship.scene.ScrapShipActor;
+import com.zanateh.scrapship.ship.ComponentShip;
 
 public class Hardpoint extends ScrapShipActor {
 
@@ -82,6 +85,20 @@ public class Hardpoint extends ScrapShipActor {
 		
 	}
 	
+	public void secondaryAttach(PodComponent podComponent) {
+		ArrayList<Hardpoint> freeHardpoints = podComponent.getFreeHardpointsForShip();
+		for(Hardpoint freeHardpoint : freeHardpoints ) {
+			if(freeHardpoint.component == this.component) {
+				continue;
+			}
+			if(this.intersect(freeHardpoint)) {
+				this.attach(freeHardpoint);
+				freeHardpoint.slaveAttach(this);
+			}
+		}		
+	}
+	
+	
 	private void slaveAttach(Hardpoint hp) 
 	{
 		this.attached = hp;
@@ -119,5 +136,6 @@ public class Hardpoint extends ScrapShipActor {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
+
 }
