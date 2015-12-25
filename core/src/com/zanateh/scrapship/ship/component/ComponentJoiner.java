@@ -56,6 +56,7 @@ public class ComponentJoiner extends Actor {
 							ComponentShipFactory.ShipType.EmptyShip);
 			
 			ship.setPosition(event.getPosition());
+			ship.setRotation(event.getRotation());
 			ship.attachComponent((PodComponent)event.getTarget(), 0, 0, 0);
 		}				
 

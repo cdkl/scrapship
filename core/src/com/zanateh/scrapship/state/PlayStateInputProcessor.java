@@ -170,8 +170,14 @@ public class PlayStateInputProcessor extends ScrapShipStage {
 
 	@Override
 	public boolean scrolled(int amount) {
-		if(cameraManager != null ) cameraManager.incrementZoom(amount);
-		return true;
+		if(selectionManager.getSelected() != null) {
+			selectionManager.rotateSelected(-10f*amount);
+			return true;
+		}
+		else {
+			if(cameraManager != null ) cameraManager.incrementZoom(amount);
+			return true;
+		}
 	}
 
 	public void setShipControl(IShipControl shipControl) {
