@@ -10,10 +10,9 @@ public interface IShipControl {
 
 	void setRightThrust(float thrust);
 
-	void remove();
-
 	void setCCWThrust(float thrust);
 
 	void setCWThrust(float thrust);
 
+	void remove();
 }
