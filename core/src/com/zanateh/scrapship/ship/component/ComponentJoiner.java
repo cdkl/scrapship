@@ -39,6 +39,11 @@ public class ComponentJoiner extends Actor {
 			intersect = intersectHardpoints(hardpoint, stage.getRoot());
 			if( intersect != null ) {
 				intersect.attach(hardpoint);
+				for( Hardpoint otherHardpoint : releasedComponent.getHardpoints() ) {
+					if( otherHardpoint != hardpoint ) {
+						otherHardpoint.secondaryAttach(intersect.component);
+					}
+				}
 				break;
 			}
 		}

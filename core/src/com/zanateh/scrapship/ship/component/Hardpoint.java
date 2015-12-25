@@ -1,5 +1,7 @@
 package com.zanateh.scrapship.ship.component;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -11,6 +13,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.zanateh.scrapship.scene.ScrapShipActor;
+import com.zanateh.scrapship.ship.ComponentShip;
 
 public class Hardpoint extends ScrapShipActor {
 
@@ -55,6 +58,7 @@ public class Hardpoint extends ScrapShipActor {
 		// Vector of hardpoint to origin
 		Vector2 rotatedRelativePosition = new Vector2(position);
 		rotatedRelativePosition.rotate(this.component.getRotation());
+		float masterRotationDegrees = rotatedRelativePosition.angle();
 		rotatedRelativePosition.add(this.component.getPosition());
 		
 		this.attached = hp;
@@ -62,9 +66,7 @@ public class Hardpoint extends ScrapShipActor {
 		// Need to take the provided vector, 
 		// rotate our vector to match @ 180 degrees,
 		
-		float masterRotationDegrees = rotatedRelativePosition.angle();
-		float slaveRotationDegrees = hp.position.angle();
-		
+		float slaveRotationDegrees = hp.position.angle();	
 		float requiredRotationDegrees = 
 				(masterRotationDegrees - slaveRotationDegrees + 180) % 360;
 		
@@ -82,6 +84,20 @@ public class Hardpoint extends ScrapShipActor {
 		this.attached.slaveAttach(this);
 		
 	}
+	
+	public void secondaryAttach(PodComponent podComponent) {
+		ArrayList<Hardpoint> freeHardpoints = podComponent.getFreeHardpointsForShip();
+		for(Hardpoint freeHardpoint : freeHardpoints ) {
+			if(freeHardpoint.component == this.component) {
+				continue;
+			}
+			if(this.intersect(freeHardpoint)) {
+				this.attach(freeHardpoint);
+				freeHardpoint.slaveAttach(this);
+			}
+		}		
+	}
+	
 	
 	private void slaveAttach(Hardpoint hp) 
 	{
@@ -120,5 +136,6 @@ public class Hardpoint extends ScrapShipActor {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
+
 }

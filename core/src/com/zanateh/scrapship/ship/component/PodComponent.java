@@ -15,13 +15,14 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Transform;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.zanateh.scrapship.scene.ScrapShipActorGroup;
 import com.zanateh.scrapship.ship.ComponentShip;
 import com.zanateh.scrapship.ship.DetachComponentAction;
 import com.zanateh.scrapship.state.ISelectable;
 
-public class PodComponent extends ScrapShipActorGroup implements ISelectable {
+public class PodComponent extends ScrapShipActorGroup implements ISelectable, IHasHardpoint {
 
 	private Sprite sprite;
 	
@@ -57,6 +58,7 @@ public class PodComponent extends ScrapShipActorGroup implements ISelectable {
 						   worldPos.y - sprite.getHeight()/2);
 
 		sprite.setRotation( getRotation() );
+		sprite.setAlpha(0.5f);
 		
 		sprite.draw(batch);
 	}
@@ -118,7 +120,7 @@ public class PodComponent extends ScrapShipActorGroup implements ISelectable {
 	public Hardpoint getHardpoint(int index) {
 		return hardpoints.get(index);
 	}
-
+	
 	public ComponentThruster addThruster(Vector2 pos, Vector2 vec, float strength) {
 		ComponentThruster thruster = new ComponentThruster(this, pos, vec, strength);
 		this.addActor(thruster);
@@ -188,9 +190,23 @@ public class PodComponent extends ScrapShipActorGroup implements ISelectable {
 		
 	}
 
+	@Override
 	public ArrayList<Hardpoint> getHardpoints() {
-		// TODO Auto-generated method stub
-		return this.hardpoints;
+		return new ArrayList<Hardpoint>(hardpoints);
+	}
+
+	public ArrayList<Hardpoint> getFreeHardpointsForShip() {
+		ArrayList<Hardpoint> freeHardpoints = new ArrayList<Hardpoint>();
+		for( Actor shipComponentActor : getShip().getChildren() ) {
+			if( shipComponentActor instanceof IHasHardpoint ) {
+				for(Hardpoint shipComponentHardpoint : ((IHasHardpoint) shipComponentActor).getHardpoints()) {
+					if( shipComponentHardpoint.attached == null ) {
+						freeHardpoints.add(shipComponentHardpoint);
+					}
+				}
+			}
+		}
+		return freeHardpoints;
 	}
 
 	

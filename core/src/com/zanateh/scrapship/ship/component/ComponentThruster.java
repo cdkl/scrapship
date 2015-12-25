@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.zanateh.scrapship.scene.ScrapShipActor;
@@ -21,7 +20,8 @@ public class ComponentThruster extends ScrapShipActor implements IThrust {
 	
 	PodComponent component;
 	
-	private Sprite sprite;
+	private Sprite offSprite;
+	private Sprite onSprite;
 	
 	public ComponentThruster(PodComponent component, Vector2 pos, Vector2 vec, float strength) {
 		this.component = component;
@@ -31,9 +31,13 @@ public class ComponentThruster extends ScrapShipActor implements IThrust {
 		this.strength = strength;
 		this.power = 0;
 		
-		sprite = new Sprite(new Texture(Gdx.files.internal("data/thruster.png")));
-		sprite.setSize(0.25f, 0.25f);
-		sprite.setOrigin(0, 0);//sprite.getHeight()/2);
+		offSprite = new Sprite(new Texture(Gdx.files.internal("data/thruster.png")));
+		offSprite.setSize(0.25f, 0.25f);
+		offSprite.setOrigin(0, 0);
+		onSprite = new Sprite(new Texture(Gdx.files.internal("data/thrusterOn.png")));
+		onSprite.setSize(0.25f, 0.25f);
+		onSprite.setOrigin(0, 0);
+
 	}
 
 	@Override
@@ -73,27 +77,33 @@ public class ComponentThruster extends ScrapShipActor implements IThrust {
 		body.applyForce(body.getWorldVector(shipVec.scl(strength*power)), body.getWorldPoint(shipPos), true);
 	}
 	
+	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
 	
-		if( power > 0 ) {
-			Vector2 spriteRenderOffset = new Vector2(sprite.getWidth(), sprite.getHeight()/2);
-			Vector2 spriteVec = new Vector2(vec);
-			spriteRenderOffset.rotate(spriteVec.angle() + 180);
-					
-			Vector2 spritePos = new Vector2(getPosition());
-			spritePos.add(spriteRenderOffset);
-			sprite.setPosition(spritePos.x, spritePos.y);
-			
-			float rotation = spriteVec.angle();
-			sprite.setRotation(rotation);
-			sprite.draw(batch);
-		}
+		Sprite sprite = power > 0 ? onSprite : offSprite;
+		
+		Vector2 spriteRenderOffset = new Vector2(sprite.getWidth(), sprite.getHeight()/2);
+		Vector2 spriteVec = new Vector2(vec);
+		spriteRenderOffset.rotate(spriteVec.angle() + 180);
+				
+		Vector2 spritePos = new Vector2(getPosition());
+		spritePos.add(spriteRenderOffset);
+		sprite.setPosition(spritePos.x, spritePos.y);
+		
+		float rotation = spriteVec.angle();
+		sprite.setRotation(rotation);
+		sprite.draw(batch);
 	}
 
 	@Override
 	public void postUpdate() {
 	}
 	
+	@Override
+	public String toString() {
+		String retStr = vec.toString() + ", " + strength + " @" + power;
+		return retStr;
+	}
 	
 }
