@@ -55,6 +55,7 @@ public class Hardpoint extends ScrapShipActor {
 		// Vector of hardpoint to origin
 		Vector2 rotatedRelativePosition = new Vector2(position);
 		rotatedRelativePosition.rotate(this.component.getRotation());
+		float masterRotationDegrees = rotatedRelativePosition.angle();
 		rotatedRelativePosition.add(this.component.getPosition());
 		
 		this.attached = hp;
@@ -62,9 +63,7 @@ public class Hardpoint extends ScrapShipActor {
 		// Need to take the provided vector, 
 		// rotate our vector to match @ 180 degrees,
 		
-		float masterRotationDegrees = rotatedRelativePosition.angle();
-		float slaveRotationDegrees = hp.position.angle();
-		
+		float slaveRotationDegrees = hp.position.angle();	
 		float requiredRotationDegrees = 
 				(masterRotationDegrees - slaveRotationDegrees + 180) % 360;
 		
