@@ -159,12 +159,24 @@ public class PodComponent extends ScrapShipActorGroup implements ISelectable, IH
 	{
 		Group parent = getParent();
 		
+		Vector2 xVec = new Vector2(1,0);
+		this.transformVectorToParent(xVec);
+		float rotationAfterDetach = xVec.angle();
+		
 		// If parented, tell the parent we're detaching.
 		if(parent != null) {
+			rotationAfterDetach += parent.getRotation();
 			this.detach();
 		}
 		
+		this.setRotation(rotationAfterDetach);
+	
 		isSelected=true;
+	}
+	
+	@Override
+	public void incrementSelectionRotation(float degrees) {
+		this.rotateBy(degrees);
 	}
 	
 	public void detach()
@@ -186,7 +198,7 @@ public class PodComponent extends ScrapShipActorGroup implements ISelectable, IH
 		isSelected=false;
 		
 		Gdx.app.log("Selection", "Firing ReleasedComponent.");
-		this.fire(new ReleasedComponentEvent(getPosition()));
+		this.fire(new ReleasedComponentEvent(getPosition(), this.getRotation()));
 		
 	}
 

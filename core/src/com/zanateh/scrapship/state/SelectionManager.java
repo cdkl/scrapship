@@ -46,4 +46,11 @@ public class SelectionManager {
 			this.selectedActor.setPosition(selectionPosition);
 		}
 	}
+
+	public void rotateSelected(float degrees) {
+		if(getSelected() != null) {
+			selectedActor.incrementSelectionRotation(degrees);
+		}
+		
+	}
 }
