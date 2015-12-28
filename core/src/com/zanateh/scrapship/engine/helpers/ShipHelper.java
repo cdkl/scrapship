@@ -14,10 +14,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.PodComponent;
+import com.zanateh.scrapship.engine.components.ShipComponent;
+import com.zanateh.scrapship.engine.components.PlayerControlComponent;
 import com.zanateh.scrapship.engine.components.SpriteComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
@@ -29,11 +32,16 @@ public class ShipHelper {
 	private static ComponentMapper<PodComponent> podMapper = ComponentMapper.getFor(PodComponent.class);
 	private static ComponentMapper<FixtureComponent> fixtureMapper = ComponentMapper.getFor(FixtureComponent.class);
 	private static ComponentMapper<BodyComponent> bodyMapper = ComponentMapper.getFor(BodyComponent.class);
+	private static ComponentMapper<ShipComponent> shipMapper = ComponentMapper.getFor(ShipComponent.class);
 
 	
 	
 	public static Entity createShipEntity(Engine engine, World world) {
 		Entity e = new Entity();
+
+		e.add(new ShipComponent());
+		e.add(new PlayerControlComponent());
+		e.add(new TransformComponent());
 		
 		BodyDef def = new BodyDef();
 		def.position.set(0,0);
@@ -45,8 +53,6 @@ public class ShipHelper {
 		BodyComponent bc = new BodyComponent();
 		bc.body = world.createBody(def);
 		e.add(bc);
-
-		e.add(new TransformComponent());
 		
 		engine.addEntity(e);;
 		
@@ -55,17 +61,12 @@ public class ShipHelper {
 
 	public static Entity createPodEntity(Engine engine, World world) {
 		Entity e = new Entity();
-		
-		PodComponent pc = new PodComponent();
-		e.add(pc);
-		TransformComponent tc = new TransformComponent();
-		e.add(tc);
-		FixtureComponent fc = new FixtureComponent();
-		e.add(fc);
-		HardpointComponent hc = new HardpointComponent();
-		e.add(hc);
-		ThrusterComponent thc = new ThrusterComponent();
-		e.add(thc);
+
+		e.add(new PodComponent());
+		e.add(new TransformComponent());
+		e.add(new FixtureComponent());
+		e.add(new HardpointComponent());
+		e.add(new ThrusterComponent());
 		SpriteComponent sc = new SpriteComponent();
 		Texture image = new Texture(Gdx.files.internal("data/pod.png"));
 		sc.sprite = new Sprite(image);
@@ -89,6 +90,12 @@ public class ShipHelper {
 		}
 		
 		pc.ship = shipEntity;
+		ShipComponent shipSC = shipMapper.get(shipEntity);
+		if(shipSC.pods.contains(podEntity, true)) {
+			throw new RuntimeException("Cannot add pod " + podEntity.toString() + " to ship, ship already references it.");
+		}
+		shipSC.pods.add(podEntity);
+		
 		BodyComponent shipBC = bodyMapper.get(shipEntity);
 		
 		FixtureDef fixDef = new FixtureDef();
@@ -110,29 +117,27 @@ public class ShipHelper {
 
 		Entity shipEntity = pc.ship;
 		BodyComponent shipBC = bodyMapper.get(shipEntity);
+		ShipComponent shipSC = shipMapper.get(shipEntity);
 		
+		shipSC.pods.removeValue(podEntity, true);
 		shipBC.body.destroyFixture(fc.fixture);
 		fc.fixture = null;
 	}
 	
 	public static void destroyIfNoComponentsForShip(Entity shipEntity, Engine engine, World world) {
-		Family pods = Family.all(PodComponent.class).get();
-		boolean found = false;
-		for(Entity podEntity : engine.getEntitiesFor(pods) ) {
-			PodComponent pc = podMapper.get(podEntity);
-			if(pc.ship == shipEntity) {
-				found = true;
-				break;
-			}
-		}
-		if( !found ) {
+		ShipComponent shipSC = shipMapper.get(shipEntity);
+
+		if( shipSC.pods.size == 0 ) {
 			destroyShipInternal(shipEntity, engine, world);
 		}
 	}
 	
 	public static void destroyShip(Entity shipEntity, Engine engine, World world) {
-		Family pods = Family.all(PodComponent.class).get();
-		for(Entity podEntity : engine.getEntitiesFor(pods) ) {
+		ShipComponent shipSC = shipMapper.get(shipEntity);
+
+		Array<Entity> podArray = new Array<Entity>(shipSC.pods);
+		
+		for(Entity podEntity : podArray ) {
 			PodComponent pc = podMapper.get(podEntity);
 			if(pc.ship == shipEntity) {
 				removePodFromShip(podEntity);

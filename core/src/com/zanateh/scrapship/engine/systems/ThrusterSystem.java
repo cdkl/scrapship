@@ -35,8 +35,10 @@ public class ThrusterSystem extends IteratingSystem {
 			Body body = fc.fixture.getBody();
 			for(Thruster thruster : tc.thrusters) {
 				Vector2 thrusterPos = new Vector2(thruster.position);
+				thrusterPos.rotate(fc.localRotation);
 				thrusterPos.add(fc.localPosition);
 				Vector2 thrusterVec = new Vector2(thruster.direction);
+				thrusterVec.rotate(fc.localRotation);
 				thrusterVec.scl(thruster.strength * thruster.power);
 				
 				body.applyForce(body.getWorldVector(thrusterVec), body.getWorldPoint(thrusterPos), true);

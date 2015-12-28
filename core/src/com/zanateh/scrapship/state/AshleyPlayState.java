@@ -19,6 +19,7 @@ import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
 import com.zanateh.scrapship.engine.systems.PhysicsSystem;
+import com.zanateh.scrapship.engine.systems.PlayerControlSystem;
 import com.zanateh.scrapship.engine.systems.RenderingSystem;
 import com.zanateh.scrapship.engine.systems.ThrusterSystem;
 import com.zanateh.scrapship.scene.ScrapShipStage;
@@ -51,6 +52,8 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		
 		engine = new PooledEngine();
 
+		PlayerControlSystem pcs = new PlayerControlSystem();
+		engine.addSystem(pcs);
 		engine.addSystem(new ThrusterSystem());
 		engine.addSystem(new PhysicsSystem(world));
 		engine.addSystem(new RenderingSystem(game.getSpriteBatch(), cameraManager));
@@ -61,7 +64,7 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		stage.setCameraManager(cameraManager);
 		Gdx.input.setInputProcessor(stage);
 		
-		
+		stage.setShipControl(pcs.getShipControl());
 		
 		Entity e = buildPlayerShip();
 		
@@ -77,13 +80,45 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		Entity podEntity = ShipHelper.createPodEntity(engine, world);
 		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,0), 0);
 		
+		float pow = 4f;
+		
 		ThrusterComponent thc = podEntity.getComponent(ThrusterComponent.class);
 		Thruster thruster = new Thruster();
 		thruster.position.set(-0.5f, 0);
 		thruster.direction.set(1, 0);
-		thruster.strength=0.2f;
-		thruster.power=1;
+		thruster.strength=pow;
 		thc.thrusters.add(thruster);
+		
+		thruster = new Thruster();
+		thruster.position.set(0.5f, 0);
+		thruster.direction.set(-1, 0);
+		thruster.strength=pow * 0.5f;
+		thc.thrusters.add(thruster);
+
+		thruster = new Thruster();
+		thruster.position.set(-0.5f, 0);
+		thruster.direction.set(0, 1);
+		thruster.strength=pow * 0.25f;
+		thc.thrusters.add(thruster);
+
+		thruster = new Thruster();
+		thruster.position.set(-0.5f, 0);
+		thruster.direction.set(0, -1);
+		thruster.strength=pow * 0.25f;
+		thc.thrusters.add(thruster);
+
+		thruster = new Thruster();
+		thruster.position.set(0.5f, 0);
+		thruster.direction.set(0, 1);
+		thruster.strength=pow * 0.25f;
+		thc.thrusters.add(thruster);
+
+		thruster = new Thruster();
+		thruster.position.set(0.5f, 0);
+		thruster.direction.set(0, -1);
+		thruster.strength=pow * 0.25f;
+		thc.thrusters.add(thruster);
+		
 		
 		return shipEntity;
 	}
