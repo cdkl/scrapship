@@ -14,35 +14,99 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.zanateh.scrapship.ScrapShipGame;
 import com.zanateh.scrapship.camera.CameraManager;
+import com.zanateh.scrapship.engine.components.BodyComponent;
+import com.zanateh.scrapship.engine.components.ThrusterComponent;
+import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
+import com.zanateh.scrapship.engine.helpers.ShipHelper;
+import com.zanateh.scrapship.engine.systems.PhysicsSystem;
+import com.zanateh.scrapship.engine.systems.RenderingSystem;
+import com.zanateh.scrapship.engine.systems.ThrusterSystem;
 import com.zanateh.scrapship.scene.ScrapShipStage;
 import com.zanateh.scrapship.ship.ComponentShip;
 import com.zanateh.scrapship.ship.ComponentShipFactory;
 import com.zanateh.scrapship.ship.DestroyShipEventListener;
 import com.zanateh.scrapship.ship.component.ComponentJoiner;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.PooledEngine;
 
-public class PlayState extends GameState implements IWorldSource, IStageSource {
+public class AshleyPlayState extends GameState implements IWorldSource, IStageSource {
 
 	private World world;
-	PlayStateInputProcessor stage;
-	ComponentShipFactory shipFactory;
+	private PooledEngine engine;
+	AshleyPlayStateInputProcessor stage;
+//	ComponentShipFactory shipFactory;
 	ComponentJoiner componentJoiner;
 	
-	ArrayList<ComponentShip> shipList = new ArrayList<ComponentShip>();
+//	ArrayList<ComponentShip> shipList = new ArrayList<ComponentShip>();
 	
 	CameraManager cameraManager;
 	
 	
 	@Override
-	public void Init(ScrapShipGame game) {
-		super.Init(game);	
+	public void Init(ScrapShipGame game) throws RuntimeException {
+		super.Init(game);
 		
-		this.shipFactory = new ComponentShipFactory(this, this);
-		
-		final PlayState eventPlayState = this;
-
 		world = new World(new Vector2(0,0.0f), false);
 		cameraManager = new CameraManager(game, world);
 		
+		engine = new PooledEngine();
+
+		engine.addSystem(new ThrusterSystem());
+		engine.addSystem(new PhysicsSystem(world));
+		engine.addSystem(new RenderingSystem(game.getSpriteBatch(), cameraManager));
+
+		
+		stage = new AshleyPlayStateInputProcessor(this, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), game.getSpriteBatch());
+		stage.getViewport().setCamera(game.getCamera());
+		stage.setCameraManager(cameraManager);
+		Gdx.input.setInputProcessor(stage);
+		
+		
+		
+		Entity e = buildPlayerShip();
+		
+		Entity e2 = buildStaticShip();
+		ShipHelper.setShipTransform(e2, new Vector2(3,3), 45f);
+		
+		e2.getComponent(BodyComponent.class).body.setLinearVelocity(new Vector2(-0.7f, -0.8f));
+	}
+	
+	private Entity buildPlayerShip() {
+		Entity shipEntity = ShipHelper.createShipEntity(engine, world);
+	
+		Entity podEntity = ShipHelper.createPodEntity(engine, world);
+		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,0), 0);
+		
+		ThrusterComponent thc = podEntity.getComponent(ThrusterComponent.class);
+		Thruster thruster = new Thruster();
+		thruster.position.set(-0.5f, 0);
+		thruster.direction.set(1, 0);
+		thruster.strength=0.2f;
+		thruster.power=1;
+		thc.thrusters.add(thruster);
+		
+		return shipEntity;
+	}
+	
+	private Entity buildStaticShip() {
+		Entity shipEntity = ShipHelper.createShipEntity(engine, world);
+		
+		Entity podEntity = ShipHelper.createPodEntity(engine, world);
+		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,0), 0);
+		
+		return shipEntity;
+	}
+	
+	
+	
+	
+/*		
+
+		this.shipFactory = new ComponentShipFactory(this, this);
+		
+		final AshleyPlayState eventPlayState = this;
+
+
 		stage = new PlayStateInputProcessor(this, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), game.getSpriteBatch());
 		stage.getViewport().setCamera(game.getCamera());
 		stage.setCameraManager(cameraManager);
@@ -87,31 +151,16 @@ public class PlayState extends GameState implements IWorldSource, IStageSource {
 //		shipList.add(ship2);
 		
 		stage.setShipControl(ship1.getShipControl());
-	}
-
-	protected void destroyShip(ComponentShip target) {
-		if( target != null ) {
-			shipList.remove(target);
-			target.remove();
-			target.dispose();
-		}
 		
-	}
-
-	void addShip(ComponentShip ship) {
-		
-	}
+		*/
+//	}
 	
 	@Override
 	public void Cleanup() {
 		// TODO Auto-generated method stub
 		world.dispose();
+		engine.removeAllEntities();
 
-		for(ComponentShip ship : shipList)
-		{
-			ship.dispose();
-		}
-		shipList.clear();
 		Gdx.input.setInputProcessor(null);
 		
 	}
@@ -137,28 +186,25 @@ public class PlayState extends GameState implements IWorldSource, IStageSource {
 	@Override
 	public void Update(ScrapShipGame game) {
 		stage.act(game.getUpdateFrame());
-	
-		world.step(game.getUpdateFrame(),7,3);
-
+		engine.update(game.getUpdateFrame());
 		stage.postUpdate();
-		
 	}
 
 	@Override
 	public void Draw(ScrapShipGame game) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//		Gdx.gl.glClearColor(0, 0, 0, 1);
+//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		cameraManager.setupRenderCamera();
+//		cameraManager.setupRenderCamera();
 		
-		stage.draw();
+//		stage.draw();
 		
-		cameraManager.finalizeRender();
+//		cameraManager.finalizeRender();
 	}
 
 
 	public void reset() {
-		game.changeState(new PlayState());
+		game.changeState(new AshleyPlayState());
 	}
 	
 	@Override
@@ -171,9 +217,5 @@ public class PlayState extends GameState implements IWorldSource, IStageSource {
 		return stage;
 	}
 	
-	public ComponentShipFactory getShipFactory()
-	{
-		return this.shipFactory;
-	}
-	
+
 }

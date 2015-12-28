@@ -13,7 +13,7 @@ import com.zanateh.scrapship.ship.ComponentShipFactory;
 import com.zanateh.scrapship.ship.IShipControl;
 import com.zanateh.scrapship.ship.component.PodComponent;
 
-public class PlayStateInputProcessor extends ScrapShipStage {
+public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 
 	GameState state;
 	IShipControl shipControl = null;
@@ -22,7 +22,7 @@ public class PlayStateInputProcessor extends ScrapShipStage {
 	
 	PodComponent selected = null;
 	
-	public PlayStateInputProcessor(PlayState state,int width, int height, 
+	public AshleyPlayStateInputProcessor(AshleyPlayState state,int width, int height, 
 			SpriteBatch spriteBatch) {
 		super(width, height, spriteBatch);
 		this.state = state;
