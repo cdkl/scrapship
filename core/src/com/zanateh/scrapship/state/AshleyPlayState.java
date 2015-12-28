@@ -121,9 +121,24 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		
 		podEntity = ShipHelper.createPodEntity(engine, world);
 		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,1), 90);
-
+		thc = podEntity.getComponent(ThrusterComponent.class);
+		
+		thruster = new Thruster();
+		thruster.position.set(0.5f, 0);
+		thruster.direction.set(0, -1);
+		thruster.strength=pow * 0.25f;
+		thc.thrusters.add(thruster);
+		
 		podEntity = ShipHelper.createPodEntity(engine, world);
 		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,-1), -90);
+		thc = podEntity.getComponent(ThrusterComponent.class);
+		
+		thruster = new Thruster();
+		thruster.position.set(0.5f, 0);
+		thruster.direction.set(0, 1);
+		thruster.strength=pow * 0.25f;
+		thc.thrusters.add(thruster);
+
 		
 		return shipEntity;
 	}

@@ -97,7 +97,7 @@ public class ShipControlVisitor implements IShipControl {
 		thrusterVec.rotate(fc.localRotation);
 		
 		float torque = momentArm.crs(thrusterVec);
-		if(torque * rotation > 0 ) {
+		if(torque * rotation > 0.001f ) {
 			return true;
 		}
 		
@@ -111,7 +111,7 @@ public class ShipControlVisitor implements IShipControl {
 		Vector2 thrusterVec = new Vector2(thruster.direction);
 		thrusterVec.rotate(fc.localRotation);				
 
-		if( direction.dot(thrusterVec) > 0 ) {
+		if( direction.dot(thrusterVec) > 0.001f ) {
 			return true;
 		}
 		
