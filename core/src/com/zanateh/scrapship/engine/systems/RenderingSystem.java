@@ -10,7 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.zanateh.scrapship.camera.CameraManager;
-import com.zanateh.scrapship.engine.components.SpriteComponent;
+import com.zanateh.scrapship.engine.ShipRenderVisitor;
+import com.zanateh.scrapship.engine.components.RenderComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
 
 public class RenderingSystem extends IteratingSystem {
@@ -19,17 +20,19 @@ public class RenderingSystem extends IteratingSystem {
 	private SpriteBatch batch;
 	private CameraManager camManager;
 	
-	private ComponentMapper<SpriteComponent> spriteMapper;
+	private ComponentMapper<RenderComponent> spriteMapper;
 	private ComponentMapper<TransformComponent> transformMapper;
 	
+	private ShipRenderVisitor shipRenderVisitor = new ShipRenderVisitor();
+	
 	public RenderingSystem(SpriteBatch batch, CameraManager camManager) {
-		super(Family.all(TransformComponent.class, SpriteComponent.class).get());
+		super(Family.all(TransformComponent.class, RenderComponent.class).get());
 		renderQueue = new Array<Entity>();
 		
 		this.batch = batch;
 		this.camManager = camManager;
 		
-		spriteMapper = ComponentMapper.getFor(SpriteComponent.class);
+		spriteMapper = ComponentMapper.getFor(RenderComponent.class);
 		transformMapper = ComponentMapper.getFor(TransformComponent.class);
 
 	}
@@ -47,19 +50,7 @@ public class RenderingSystem extends IteratingSystem {
 		batch.begin();
 		
 		for(Entity entity : renderQueue) {
-			SpriteComponent spriteComponent = spriteMapper.get(entity);
-			TransformComponent transformComponent = transformMapper.get(entity);
-			
-			if( spriteComponent.sprite == null ) {
-				continue;
-			}
-			
-			Vector2 spritePos = transformComponent.position;
-			spriteComponent.sprite.setPosition(spritePos.x - (spriteComponent.sprite.getWidth()/2),
-											   spritePos.y - (spriteComponent.sprite.getHeight()/2));
-			
-			spriteComponent.sprite.setRotation(transformComponent.rotation);
-			spriteComponent.sprite.draw(batch);
+			shipRenderVisitor.visit(entity, batch);
 		}
 		batch.end();
 		

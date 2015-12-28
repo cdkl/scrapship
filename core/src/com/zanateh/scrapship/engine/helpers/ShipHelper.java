@@ -21,7 +21,7 @@ import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.PodComponent;
 import com.zanateh.scrapship.engine.components.ShipComponent;
 import com.zanateh.scrapship.engine.components.PlayerControlComponent;
-import com.zanateh.scrapship.engine.components.SpriteComponent;
+import com.zanateh.scrapship.engine.components.RenderComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
 
@@ -67,12 +67,7 @@ public class ShipHelper {
 		e.add(new FixtureComponent());
 		e.add(new HardpointComponent());
 		e.add(new ThrusterComponent());
-		SpriteComponent sc = new SpriteComponent();
-		Texture image = new Texture(Gdx.files.internal("data/pod.png"));
-		sc.sprite = new Sprite(image);
-		sc.sprite.setSize(1,1);
-		sc.sprite.setOrigin(sc.sprite.getWidth()/2, sc.sprite.getHeight()/2);
-		e.add(sc);
+		e.add(new RenderComponent());
 		engine.addEntity(e);
 		
 		return e;
@@ -109,6 +104,8 @@ public class ShipHelper {
 		fixDef.restitution = 0.5f;
 		fixDef.friction = 0.6f;
 		fc.fixture = shipBC.body.createFixture(fixDef);
+		fc.localPosition.set(pos);
+		fc.localRotation = deg;
 	}
 	
 	public static void removePodFromShip(Entity podEntity) {
