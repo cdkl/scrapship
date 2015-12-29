@@ -1,5 +1,8 @@
 package com.zanateh.scrapship.state;
 
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -7,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.zanateh.scrapship.camera.CameraManager;
+import com.zanateh.scrapship.engine.helpers.PickHelper;
+import com.zanateh.scrapship.engine.systems.DragAndDropSystem;
 import com.zanateh.scrapship.scene.ScrapShipStage;
 import com.zanateh.scrapship.ship.ComponentShip;
 import com.zanateh.scrapship.ship.ComponentShipFactory;
@@ -19,13 +24,19 @@ public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 	IShipControl shipControl = null;
 	CameraManager cameraManager = null;
 	SelectionManager selectionManager = new SelectionManager();
+	// God this is horrible and shouldn't be here.
+	DragAndDropSystem dragAndDropSystem;
+	Engine engine;
 	
 	PodComponent selected = null;
 	
 	public AshleyPlayStateInputProcessor(AshleyPlayState state,int width, int height, 
-			SpriteBatch spriteBatch) {
+			SpriteBatch spriteBatch, Engine engine, CameraManager cameraManager, DragAndDropSystem dragAndDropSystem) {
 		super(width, height, spriteBatch);
 		this.state = state;
+		this.engine = engine;
+		this.cameraManager = cameraManager;
+		this.dragAndDropSystem = dragAndDropSystem;
 	}
 	
 	@Override
@@ -111,45 +122,40 @@ public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 	}
 
 	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {		
-		Vector2 stageCoords = this.screenToStageCoordinates(new Vector2(screenX, screenY));
-		Actor actor = this.hit(stageCoords.x, stageCoords.y, false);
-
-		if( actor == null ) { 
-			Gdx.app.log("HitTest", "Hit --");
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {	
+		ImmutableArray<Entity> pickedEntities = PickHelper.pick(engine, getViewport(), new Vector2(screenX, screenY));
+		if( pickedEntities.size() > 0 ) {
+			for(Entity entity : pickedEntities ) {
+				Gdx.app.log("HitTest", "Hit " + entity.toString());
+			}
+			this.dragAndDropSystem.setSelectedPosition(new Vector2(screenX, screenY));
+			PickHelper.setSelected(pickedEntities.first());
+			return true;
 		}
 		else {
-			Gdx.app.log("HitTest", "Hit " + actor.toString());
-			if( actor instanceof ISelectable ) {
-				ISelectable selectable = ((ISelectable)actor);
-				this.touchScreenPos.set(screenX, screenY);
-				selectionManager.setSelectionPosition(this.screenToStageCoordinates(new Vector2(screenX, screenY)));
-				selectionManager.setSelected(selectable);
-				
-				return true;
-			}
+			Gdx.app.log("HitTest", "Hit --");
+			return false;
 		}
-		
-		// TODO Auto-generated method stub
-		return false;
+
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		
-		if( this.selectionManager.getSelected() != null ) {
-			
-			this.selectionManager.releaseSelected();
-			
+		Entity entity = PickHelper.getSelected(engine);
+		if( entity != null ) {
+			this.dragAndDropSystem.setSelectedPosition(new Vector2(screenX, screenY));
+			PickHelper.setUnselected(entity);
 			return true;
 		}
-		// TODO Auto-generated method stub
+
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
 		this.touchScreenPos.set(screenX, screenY);
+		this.dragAndDropSystem.setSelectedPosition(new Vector2(screenX, screenY));
 		// TODO Auto-generated method stub
 		return true;
 	}
@@ -184,10 +190,6 @@ public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 		if(this.shipControl == shipControl) {
 			this.shipControl = null;
 		}
-	}
-	
-	public void setCameraManager(CameraManager cameraManager) {
-		this.cameraManager = cameraManager;
 	}
 
 }

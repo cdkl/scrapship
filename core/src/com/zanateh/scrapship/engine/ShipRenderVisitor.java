@@ -89,16 +89,18 @@ public class ShipRenderVisitor {
 			hardpointSprite.setSize(hpc.hardpointRadius*2, hpc.hardpointRadius*2);
 			hardpointSprite.setOrigin(hardpointSprite.getWidth()/2, hardpointSprite.getHeight()/2);
 			for( Hardpoint hardpoint : hpc.hardpoints ) {
-				Vector2 hardpointPosition = new Vector2(hardpoint.position);
-				hardpointPosition.rotate(tc.rotation);
-				hardpointPosition.add(tc.position);
-				float hardpointRotation = hardpoint.position.angle();
-				hardpointRotation += tc.rotation;
-				hardpointSprite.setPosition(hardpointPosition.x - (hardpointSprite.getWidth()/2),
-						hardpointPosition.y - (hardpointSprite.getHeight()/2));
-				hardpointSprite.setRotation(hardpointRotation);
-				
-				hardpointSprite.draw(batch);
+				if(hardpoint.attached == null) {
+					Vector2 hardpointPosition = new Vector2(hardpoint.position);
+					hardpointPosition.rotate(tc.rotation);
+					hardpointPosition.add(tc.position);
+					float hardpointRotation = hardpoint.position.angle();
+					hardpointRotation += tc.rotation;
+					hardpointSprite.setPosition(hardpointPosition.x - (hardpointSprite.getWidth()/2),
+							hardpointPosition.y - (hardpointSprite.getHeight()/2));
+					hardpointSprite.setRotation(hardpointRotation);
+					
+					hardpointSprite.draw(batch);
+				}
 			}
 		}
 		

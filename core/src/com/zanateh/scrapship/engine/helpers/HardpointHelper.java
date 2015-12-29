@@ -2,6 +2,8 @@ package com.zanateh.scrapship.engine.helpers;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 
 public class HardpointHelper {
@@ -28,16 +30,24 @@ public class HardpointHelper {
 		hp2.attached = hp1;
 	}
 	
-	public static void detach(Hardpoint hp1) throws Exception {
+	public static void detach(Hardpoint hp1) {
 		Hardpoint hp2 = hp1.attached;
 		if( hp2 == null ) {
-			throw new Exception("Cannot attach hardpoints: hardpoint " + hp1.toString() + " not attached.");			
+			throw new RuntimeException("Cannot attach hardpoints: hardpoint " + hp1.toString() + " not attached.");			
 		}
 			
 		hp1.attached = null;
 		hp2.attached = null;
 	}
 	
+	public static void detachAll(Array<Hardpoint> hardpoints) {
+		for( Hardpoint hardpoint : hardpoints) {
+			if(hardpoint.attached != null) {
+				detach(hardpoint);
+			}
+		}
+		
+	}
 	
 	
 }

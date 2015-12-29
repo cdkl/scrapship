@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
+import com.zanateh.scrapship.engine.components.PickableComponent;
 import com.zanateh.scrapship.engine.components.PodComponent;
 import com.zanateh.scrapship.engine.components.ShipComponent;
 import com.zanateh.scrapship.engine.components.PlayerControlComponent;
@@ -30,6 +31,7 @@ public class ShipHelper {
 	private static ComponentMapper<FixtureComponent> fixtureMapper = ComponentMapper.getFor(FixtureComponent.class);
 	private static ComponentMapper<BodyComponent> bodyMapper = ComponentMapper.getFor(BodyComponent.class);
 	private static ComponentMapper<ShipComponent> shipMapper = ComponentMapper.getFor(ShipComponent.class);
+	private static ComponentMapper<HardpointComponent> hardpointMapper = ComponentMapper.getFor(HardpointComponent.class);
 
 	
 	
@@ -65,6 +67,8 @@ public class ShipHelper {
 		e.add(new HardpointComponent());
 		e.add(new ThrusterComponent());
 		e.add(new RenderComponent());
+		e.add(new PickableComponent());
+		
 		engine.addEntity(e);
 		
 		return e;
@@ -108,10 +112,15 @@ public class ShipHelper {
 	public static void removePodFromShip(Entity podEntity) {
 		PodComponent pc = podMapper.get(podEntity);
 		FixtureComponent fc = fixtureMapper.get(podEntity);
+		HardpointComponent hc = hardpointMapper.get(podEntity);
 
 		Entity shipEntity = pc.ship;
 		BodyComponent shipBC = bodyMapper.get(shipEntity);
 		ShipComponent shipSC = shipMapper.get(shipEntity);
+		
+		if(hc != null ) {
+			HardpointHelper.detachAll(hc.hardpoints);
+		}
 		
 		shipSC.pods.removeValue(podEntity, true);
 		shipBC.body.destroyFixture(fc.fixture);

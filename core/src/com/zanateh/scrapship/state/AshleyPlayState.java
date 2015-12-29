@@ -22,6 +22,7 @@ import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
 import com.zanateh.scrapship.engine.helpers.HardpointHelper;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
 import com.zanateh.scrapship.engine.systems.CameraTargetSystem;
+import com.zanateh.scrapship.engine.systems.DragAndDropSystem;
 import com.zanateh.scrapship.engine.systems.PhysicsSystem;
 import com.zanateh.scrapship.engine.systems.PlayerControlSystem;
 import com.zanateh.scrapship.engine.systems.RenderingSystem;
@@ -60,13 +61,16 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		engine.addSystem(pcs);
 		engine.addSystem(new ThrusterSystem());
 		engine.addSystem(new PhysicsSystem(world));
+		DragAndDropSystem dads = new DragAndDropSystem(engine, world);
+		engine.addSystem(dads);
 		engine.addSystem(new CameraTargetSystem(cameraManager));
 		engine.addSystem(new RenderingSystem(game.getSpriteBatch(), cameraManager));
 
 		
-		stage = new AshleyPlayStateInputProcessor(this, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), game.getSpriteBatch());
+		stage = new AshleyPlayStateInputProcessor(this, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), game.getSpriteBatch(),
+				engine, cameraManager, dads);
+		dads.setViewport(stage.getViewport());
 		stage.getViewport().setCamera(game.getCamera());
-		stage.setCameraManager(cameraManager);
 		Gdx.input.setInputProcessor(stage);
 		
 		stage.setShipControl(pcs.getShipControl());
