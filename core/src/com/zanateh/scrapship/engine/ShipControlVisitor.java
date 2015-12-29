@@ -55,7 +55,7 @@ public class ShipControlVisitor implements IShipControl {
 			FixtureComponent fc = fixtureMapper.get(podEntity);
 			
 
-			// Reset all thrusters to 0.
+
 			for( Thruster thruster : thrusterComponent.thrusters ) {
 				thruster.power = 0;				
 				

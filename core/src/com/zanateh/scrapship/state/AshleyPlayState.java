@@ -17,6 +17,7 @@ import com.zanateh.scrapship.camera.CameraManager;
 import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.CameraTargetComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
+import com.zanateh.scrapship.engine.components.PlayerControlComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
 import com.zanateh.scrapship.engine.helpers.HardpointHelper;
@@ -86,6 +87,7 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 	private Entity buildPlayerShip() {
 		Entity shipEntity = ShipHelper.createShipEntity(engine, world);
 		shipEntity.add(new CameraTargetComponent());
+		shipEntity.add(new PlayerControlComponent());
 		
 		Entity podEntity = ShipHelper.createPodEntity(engine, world);
 		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,0), 0);

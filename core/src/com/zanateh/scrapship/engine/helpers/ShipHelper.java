@@ -39,7 +39,6 @@ public class ShipHelper {
 		Entity e = new Entity();
 
 		e.add(new ShipComponent());
-		e.add(new PlayerControlComponent());
 		e.add(new TransformComponent());
 		
 		BodyDef def = new BodyDef();

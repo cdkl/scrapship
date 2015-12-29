@@ -5,15 +5,19 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
+import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.PodComponent;
 import com.zanateh.scrapship.engine.components.SelectedComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
+import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
+import com.zanateh.scrapship.engine.helpers.HardpointHelper;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
 
 public class DragAndDropSystem extends IteratingSystem {
@@ -22,7 +26,9 @@ public class DragAndDropSystem extends IteratingSystem {
 	private ComponentMapper<SelectedComponent> selectedMapper = ComponentMapper.getFor(SelectedComponent.class);
 	private ComponentMapper<PodComponent> podMapper = ComponentMapper.getFor(PodComponent.class);
 	private ComponentMapper<FixtureComponent> fixtureMapper = ComponentMapper.getFor(FixtureComponent.class);
+	private ComponentMapper<HardpointComponent> hardpointMapper = ComponentMapper.getFor(HardpointComponent.class);
 	
+	private Family hardpointFamily = Family.all(HardpointComponent.class, TransformComponent.class).get();
 	
 	private Array<Entity> knownSelected = new Array<Entity>();
 	private Array<Entity> selectedQueue = new Array<Entity>();
@@ -88,21 +94,68 @@ public class DragAndDropSystem extends IteratingSystem {
 
 			PodComponent pc = podMapper.get(entity);
 			if( pc != null ) {
-				TransformComponent tc = transformMapper.get(entity);
 				entity.add(new FixtureComponent());
-				// If we're dropping a PodComponent, then we'll create a ship in the new location.
-				Entity shipEntity = ShipHelper.createShipEntity(engine, world);
-				Vector2 dropPosition = new Vector2(this.selectedPosition);
-				viewport.unproject(dropPosition);
-				ShipHelper.setShipTransform(shipEntity, dropPosition, tc.rotation);
-				ShipHelper.addPodToShip(entity, shipEntity, new Vector2(0,0), 0);
+				
+				// Attempt to connect to ship.
+				boolean connected = false;
+				HardpointComponent hc = hardpointMapper.get(entity);
+				TransformComponent tc = transformMapper.get(entity);
+				if(hc != null) {
+					IntersectReturn intersect = null;
+					
+					for(Hardpoint hardpoint : hc.hardpoints) {
+						intersect = intersectHardpoints(entity, hardpoint, engine.getEntitiesFor(hardpointFamily));
+						if(intersect != null && intersect.hardpoint != null && intersect.entity != null ) {
+							ShipHelper.attachPodToShipPod(entity, hardpoint, intersect.entity, intersect.hardpoint);
+							connected = true;
+							break;
+						}
+					}
+					
+				}
+				
+				if( ! connected ) {
+					// If we're dropping a PodComponent, then we'll create a ship in the new location.
+					Entity shipEntity = ShipHelper.createShipEntity(engine, world);
+					Vector2 dropPosition = new Vector2(this.selectedPosition);
+					viewport.unproject(dropPosition);
+					ShipHelper.setShipTransform(shipEntity, dropPosition, tc.rotation);
+					ShipHelper.addPodToShip(entity, shipEntity, new Vector2(0,0), 0);
+				}
 			}
 
 		}
 		
 		selectedQueue.clear();
 	}
+
+	private class IntersectReturn {
+		public IntersectReturn(Entity entity, Hardpoint hardpoint) {
+			this.hardpoint = hardpoint; this.entity = entity;
+		}
+		public Hardpoint hardpoint = null;
+		public Entity entity = null;
+	}
 	
+	private IntersectReturn intersectHardpoints(Entity entity, Hardpoint hardpoint, ImmutableArray<Entity> otherEntities) {
+		TransformComponent tc = transformMapper.get(entity);	
+		
+		for(Entity otherEntity : otherEntities) {
+			if( otherEntity == entity) {
+				continue;
+			}
+			HardpointComponent ohc = hardpointMapper.get(otherEntity);
+			TransformComponent otc = transformMapper.get(otherEntity);
+			for(Hardpoint otherHardpoint : ohc.hardpoints) {
+				if(otherHardpoint.attached == null && HardpointHelper.intersect(tc, hardpoint, otc, otherHardpoint)) {
+					return new IntersectReturn(otherEntity, otherHardpoint);
+				}
+			}
+		}
+		
+		return null;
+	}
+
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 		selectedQueue.add(entity);

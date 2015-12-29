@@ -8,5 +8,5 @@ public class Hardpoint {
 	public Vector2 position = null;
 	public Component component = null;
 	
-	public static final float HARDPOINT_RADIUS = 0.1f;
+	public float hardpointRadius = 0.1f;
 }

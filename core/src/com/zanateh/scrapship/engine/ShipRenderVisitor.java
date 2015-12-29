@@ -86,10 +86,11 @@ public class ShipRenderVisitor {
 		
 		HardpointComponent hpc = hardpointMapper.get(entity);
 		if( hpc != null ) {
-			hardpointSprite.setSize(hpc.hardpointRadius*2, hpc.hardpointRadius*2);
-			hardpointSprite.setOrigin(hardpointSprite.getWidth()/2, hardpointSprite.getHeight()/2);
 			for( Hardpoint hardpoint : hpc.hardpoints ) {
 				if(hardpoint.attached == null) {
+					hardpointSprite.setSize(hardpoint.hardpointRadius*2, hardpoint.hardpointRadius*2);
+					hardpointSprite.setOrigin(hardpointSprite.getWidth()/2, hardpointSprite.getHeight()/2);
+
 					Vector2 hardpointPosition = new Vector2(hardpoint.position);
 					hardpointPosition.rotate(tc.rotation);
 					hardpointPosition.add(tc.position);
