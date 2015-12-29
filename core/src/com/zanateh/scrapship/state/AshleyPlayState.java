@@ -15,9 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.zanateh.scrapship.ScrapShipGame;
 import com.zanateh.scrapship.camera.CameraManager;
 import com.zanateh.scrapship.engine.components.BodyComponent;
+import com.zanateh.scrapship.engine.components.CameraTargetComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
+import com.zanateh.scrapship.engine.systems.CameraTargetSystem;
 import com.zanateh.scrapship.engine.systems.PhysicsSystem;
 import com.zanateh.scrapship.engine.systems.PlayerControlSystem;
 import com.zanateh.scrapship.engine.systems.RenderingSystem;
@@ -56,6 +58,7 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		engine.addSystem(pcs);
 		engine.addSystem(new ThrusterSystem());
 		engine.addSystem(new PhysicsSystem(world));
+		engine.addSystem(new CameraTargetSystem(cameraManager));
 		engine.addSystem(new RenderingSystem(game.getSpriteBatch(), cameraManager));
 
 		
@@ -76,7 +79,8 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 	
 	private Entity buildPlayerShip() {
 		Entity shipEntity = ShipHelper.createShipEntity(engine, world);
-	
+		shipEntity.add(new CameraTargetComponent());
+		
 		Entity podEntity = ShipHelper.createPodEntity(engine, world);
 		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,0), 0);
 		
