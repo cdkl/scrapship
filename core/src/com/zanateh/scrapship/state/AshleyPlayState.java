@@ -16,8 +16,10 @@ import com.zanateh.scrapship.ScrapShipGame;
 import com.zanateh.scrapship.camera.CameraManager;
 import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.CameraTargetComponent;
+import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
+import com.zanateh.scrapship.engine.helpers.HardpointHelper;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
 import com.zanateh.scrapship.engine.systems.CameraTargetSystem;
 import com.zanateh.scrapship.engine.systems.PhysicsSystem;
@@ -83,6 +85,10 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		
 		Entity podEntity = ShipHelper.createPodEntity(engine, world);
 		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,0), 0);
+		HardpointComponent hpc1 = podEntity.getComponent(HardpointComponent.class);
+		
+		hpc1.hardpoints.add(HardpointHelper.createHardpoint(hpc1, new Vector2(0, 0.5f)));
+		hpc1.hardpoints.add(HardpointHelper.createHardpoint(hpc1, new Vector2(0, -0.5f)));
 		
 		float pow = 4f;
 		
@@ -123,9 +129,15 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		thruster.strength=pow * 0.25f;
 		thc.thrusters.add(thruster);
 		
-		podEntity = ShipHelper.createPodEntity(engine, world);
-		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,1), 90);
-		thc = podEntity.getComponent(ThrusterComponent.class);
+		Entity podEntity2 = ShipHelper.createPodEntity(engine, world);
+
+		HardpointComponent hpc2 = podEntity2.getComponent(HardpointComponent.class);
+		hpc2.hardpoints.add(HardpointHelper.createHardpoint(hpc2, new Vector2(-0.5f, 0)));
+
+		ShipHelper.attachPodToShipPod(podEntity2, hpc2.hardpoints.get(0), podEntity, hpc1.hardpoints.get(0));
+		
+		
+		thc = podEntity2.getComponent(ThrusterComponent.class);
 		
 		thruster = new Thruster();
 		thruster.position.set(0.5f, 0);
@@ -133,9 +145,14 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		thruster.strength=pow * 0.25f;
 		thc.thrusters.add(thruster);
 		
-		podEntity = ShipHelper.createPodEntity(engine, world);
-		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,-1), -90);
-		thc = podEntity.getComponent(ThrusterComponent.class);
+		Entity podEntity3 = ShipHelper.createPodEntity(engine, world);
+		
+		HardpointComponent hpc3 = podEntity3.getComponent(HardpointComponent.class);
+		hpc3.hardpoints.add(HardpointHelper.createHardpoint(hpc3, new Vector2(-0.5f, 0)));
+
+		ShipHelper.attachPodToShipPod(podEntity3, hpc3.hardpoints.get(0), podEntity, hpc1.hardpoints.get(1));
+		
+		thc = podEntity3.getComponent(ThrusterComponent.class);
 		
 		thruster = new Thruster();
 		thruster.position.set(0.5f, 0);

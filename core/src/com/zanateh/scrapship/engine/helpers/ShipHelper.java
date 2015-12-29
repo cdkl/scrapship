@@ -20,6 +20,7 @@ import com.zanateh.scrapship.engine.components.PlayerControlComponent;
 import com.zanateh.scrapship.engine.components.RenderComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
+import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 
 public class ShipHelper {
 	
@@ -115,7 +116,54 @@ public class ShipHelper {
 		shipSC.pods.removeValue(podEntity, true);
 		shipBC.body.destroyFixture(fc.fixture);
 		fc.fixture = null;
+		pc.ship = null;
 	}
+	
+	public static void attachPodToShipPod(Entity podEntity, Hardpoint hp1, Entity shipPodEntity, Hardpoint hp2) {
+		if( hp1.attached != null ) {
+			throw new RuntimeException("Cannot attach hardpoints: hardpoint " + hp1.toString() + " already attached to " + hp1.attached.toString());
+		}
+		if( hp2.attached != null ) {
+			throw new RuntimeException("Cannot attach hardpoints: hardpoint " + hp2.toString() + " already attached to " + hp2.attached.toString());
+		}
+
+		// Remove pod from previous ship
+		PodComponent podEntityComponent = podMapper.get(podEntity);
+		PodComponent shipPodComponent = podMapper.get(shipPodEntity);
+		Entity previousShipEntity = podEntityComponent.ship;
+		if( previousShipEntity != null ) {
+			removePodFromShip(podEntity);
+		}
+		
+		// Attach hardpoints
+		HardpointHelper.attach(hp1, hp2);
+		
+		// Transform newly attached pod
+		FixtureComponent shipPodFixture = fixtureMapper.get(shipPodEntity);
+		FixtureComponent podFixture = fixtureMapper.get(podEntity);
+		Vector2 hp2Position = 
+				new Vector2(hp2.position).rotate(shipPodFixture.localRotation);
+		float hp2Rotation = hp2Position.angle();
+		hp2Position.add(shipPodFixture.localPosition);
+		
+		// hp2Position is now the position of hp2 locally for the ship. 
+		// This will be where hp1 has to end up when podEntity is transformed correctly.
+
+		// podRotation is how far the pod has to be rotated so that its hardpoint is diametrically opposed from the other
+		float podRotation = (hp2Rotation + 180f - hp1.position.angle()) % 360f;
+		
+		// Now we work out the pod's position by rotating hp1's position, and subbing that rotated position from hp2Position.
+		Vector2 hp1Vector = new Vector2(hp1.position);
+		hp1Vector.rotate(podRotation);
+		Vector2 podPosition = new Vector2(hp2Position);
+		podPosition.sub(hp1Vector);
+	
+		addPodToShip(podEntity, shipPodComponent.ship, podPosition, podRotation);
+		// Secondary attachments
+		
+	}
+	
+	
 	
 	public static void destroyIfNoComponentsForShip(Entity shipEntity, Engine engine, World world) {
 		ShipComponent shipSC = shipMapper.get(shipEntity);
