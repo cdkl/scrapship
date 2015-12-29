@@ -28,7 +28,7 @@ public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 	DragAndDropSystem dragAndDropSystem;
 	Engine engine;
 	
-	PodComponent selected = null;
+	boolean currentTouchDown = false;
 	
 	public AshleyPlayStateInputProcessor(AshleyPlayState state,int width, int height, 
 			SpriteBatch spriteBatch, Engine engine, CameraManager cameraManager, DragAndDropSystem dragAndDropSystem) {
@@ -130,6 +130,7 @@ public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 			}
 			this.dragAndDropSystem.setSelectedPosition(new Vector2(screenX, screenY));
 			PickHelper.setSelected(pickedEntities.first());
+			currentTouchDown = true;
 			return true;
 		}
 		else {
@@ -149,6 +150,7 @@ public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 			return true;
 		}
 
+		currentTouchDown = false;
 		return false;
 	}
 
@@ -178,7 +180,12 @@ public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 
 	@Override
 	public boolean scrolled(int amount) {
-		if(cameraManager != null ) cameraManager.incrementZoom(amount);
+		if(currentTouchDown) {
+			dragAndDropSystem.rotateSelected(-10f*amount);
+		}
+		else {
+			if(cameraManager != null ) cameraManager.incrementZoom(amount);
+		}
 		return true;
 	}
 

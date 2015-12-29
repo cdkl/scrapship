@@ -38,6 +38,8 @@ public class DragAndDropSystem extends IteratingSystem {
 	private World world;
 	private Viewport viewport;
 	
+	private float nextRotate = 0f;
+	
 	public DragAndDropSystem(Engine engine, World world) {
 		super(Family.all(SelectedComponent.class, TransformComponent.class).get());
 		this.engine = engine;
@@ -80,6 +82,7 @@ public class DragAndDropSystem extends IteratingSystem {
 				TransformComponent tc = transformMapper.get(entity);
 				if( tc != null ) {
 					tc.position.set(selectedPosition);
+					tc.rotation += this.nextRotate;
 					viewport.unproject(tc.position);
 				}
 			}
@@ -126,9 +129,14 @@ public class DragAndDropSystem extends IteratingSystem {
 
 		}
 		
+		nextRotate = 0f;
 		selectedQueue.clear();
 	}
 
+	public void rotateSelected(float rotate) {
+		this.nextRotate += rotate;
+	}
+	
 	private class IntersectReturn {
 		public IntersectReturn(Entity entity, Hardpoint hardpoint) {
 			this.hardpoint = hardpoint; this.entity = entity;
