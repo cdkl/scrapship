@@ -45,11 +45,11 @@ public class InitState extends GameState {
 
 	}
 
-	public void goToAshley() {
+	public void goToPlay() {
 		game.changeState(new AshleyPlayState());
 	}
 	
-	public void goToPlay() {
+	public void goToOld() {
 		game.changeState(new PlayState());
 	}
 	

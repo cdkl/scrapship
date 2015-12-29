@@ -9,16 +9,6 @@ import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 
 public class HardpointHelper {
 	
-	
-	public static Hardpoint createHardpoint(Component component, Vector2 position) {
-		Hardpoint hardpoint = new Hardpoint();
-		hardpoint.component = component;
-		hardpoint.position = new Vector2(position);
-		
-		return hardpoint;
-	}
-	
-
 	public static void attach(Hardpoint hp1, Hardpoint hp2) {
 		if( hp1.attached != null ) {
 			throw new RuntimeException("Cannot attach hardpoints: hardpoint " + hp1.toString() + " already attached to " + hp1.attached.toString());

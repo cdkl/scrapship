@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.zanateh.scrapship.engine.components.BodyComponent;
+import com.zanateh.scrapship.engine.components.CameraTargetComponent;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.PickableComponent;
@@ -33,7 +34,12 @@ public class ShipHelper {
 	private static ComponentMapper<ShipComponent> shipMapper = ComponentMapper.getFor(ShipComponent.class);
 	private static ComponentMapper<HardpointComponent> hardpointMapper = ComponentMapper.getFor(HardpointComponent.class);
 
-	
+	public static Entity createPlayerShipEntity(Engine engine, World world) {
+		Entity shipEntity = createShipEntity(engine, world);
+		shipEntity.add(new CameraTargetComponent());
+		shipEntity.add(new PlayerControlComponent());
+		return shipEntity;
+	}
 	
 	public static Entity createShipEntity(Engine engine, World world) {
 		Entity e = new Entity();

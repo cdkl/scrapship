@@ -19,9 +19,12 @@ import com.zanateh.scrapship.engine.components.CameraTargetComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.PlayerControlComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
+import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
 import com.zanateh.scrapship.engine.helpers.HardpointHelper;
+import com.zanateh.scrapship.engine.helpers.ShipFactory;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
+import com.zanateh.scrapship.engine.helpers.ShipFactory.ShipType;
 import com.zanateh.scrapship.engine.systems.CameraTargetSystem;
 import com.zanateh.scrapship.engine.systems.DragAndDropSystem;
 import com.zanateh.scrapship.engine.systems.PhysicsSystem;
@@ -47,7 +50,7 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 //	ArrayList<ComponentShip> shipList = new ArrayList<ComponentShip>();
 	
 	CameraManager cameraManager;
-	
+	ShipFactory shipFactory;
 	
 	@Override
 	public void Init(ScrapShipGame game) throws RuntimeException {
@@ -76,114 +79,130 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		
 		stage.setShipControl(pcs.getShipControl());
 		
-		Entity e = buildPlayerShip();
+		shipFactory = new ShipFactory(engine, world);
 		
-		Entity e2 = buildStaticShip();
-		ShipHelper.setShipTransform(e2, new Vector2(3,3), 45f);
+		Entity e = shipFactory.createShip(ShipType.PlayerShip);
+
+		Random rand = new Random();
+		rand.setSeed(1);
 		
-		e2.getComponent(BodyComponent.class).body.setLinearVelocity(new Vector2(-0.7f, -0.8f));
+		float distRange = 10;
+		
+		for( int i = 0; i < 10; ++i ) {
+			Entity randomShip = shipFactory.createShip(ShipType.RandomShip);
+			ShipHelper.setShipTransform(randomShip, 
+					new Vector2((float)rand.nextGaussian() * distRange, (float) rand.nextGaussian() * distRange ), 
+					rand.nextInt(360));
+		}
+
+		
+//		
+//		Entity e2 = shipFactory.createShip(ShipType.DebugShip);
+//		ShipHelper.setShipTransform(e2, new Vector2(3,3), 45f);
+//		
+//		e2.getComponent(BodyComponent.class).body.setLinearVelocity(new Vector2(-0.7f, -0.8f));
 	}
 	
-	private Entity buildPlayerShip() {
-		Entity shipEntity = ShipHelper.createShipEntity(engine, world);
-		shipEntity.add(new CameraTargetComponent());
-		shipEntity.add(new PlayerControlComponent());
-		
-		Entity podEntity = ShipHelper.createPodEntity(engine, world);
-		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,0), 0);
-		HardpointComponent hpc1 = podEntity.getComponent(HardpointComponent.class);
-		
-		hpc1.hardpoints.add(HardpointHelper.createHardpoint(hpc1, new Vector2(0, 0.5f)));
-		hpc1.hardpoints.add(HardpointHelper.createHardpoint(hpc1, new Vector2(0, -0.5f)));
-		
-		float pow = 4f;
-		
-		ThrusterComponent thc = podEntity.getComponent(ThrusterComponent.class);
-		Thruster thruster = new Thruster();
-		thruster.position.set(-0.5f, 0);
-		thruster.direction.set(1, 0);
-		thruster.strength=pow;
-		thc.thrusters.add(thruster);
-		
-		thruster = new Thruster();
-		thruster.position.set(0.5f, 0);
-		thruster.direction.set(-1, 0);
-		thruster.strength=pow * 0.5f;
-		thc.thrusters.add(thruster);
-
-		thruster = new Thruster();
-		thruster.position.set(-0.5f, 0);
-		thruster.direction.set(0, 1);
-		thruster.strength=pow * 0.25f;
-		thc.thrusters.add(thruster);
-
-		thruster = new Thruster();
-		thruster.position.set(-0.5f, 0);
-		thruster.direction.set(0, -1);
-		thruster.strength=pow * 0.25f;
-		thc.thrusters.add(thruster);
-
-		thruster = new Thruster();
-		thruster.position.set(0.5f, 0);
-		thruster.direction.set(0, 1);
-		thruster.strength=pow * 0.25f;
-		thc.thrusters.add(thruster);
-
-		thruster = new Thruster();
-		thruster.position.set(0.5f, 0);
-		thruster.direction.set(0, -1);
-		thruster.strength=pow * 0.25f;
-		thc.thrusters.add(thruster);
-		
-		Entity podEntity2 = ShipHelper.createPodEntity(engine, world);
-
-		HardpointComponent hpc2 = podEntity2.getComponent(HardpointComponent.class);
-		hpc2.hardpoints.add(HardpointHelper.createHardpoint(hpc2, new Vector2(-0.5f, 0)));
-
-		ShipHelper.attachPodToShipPod(podEntity2, hpc2.hardpoints.get(0), podEntity, hpc1.hardpoints.get(0));
-		
-		
-		thc = podEntity2.getComponent(ThrusterComponent.class);
-		
-		thruster = new Thruster();
-		thruster.position.set(0.5f, 0);
-		thruster.direction.set(0, -1);
-		thruster.strength=pow * 0.25f;
-		thc.thrusters.add(thruster);
-		
-		Entity podEntity3 = ShipHelper.createPodEntity(engine, world);
-		
-		HardpointComponent hpc3 = podEntity3.getComponent(HardpointComponent.class);
-		hpc3.hardpoints.add(HardpointHelper.createHardpoint(hpc3, new Vector2(-0.5f, 0)));
-
-		ShipHelper.attachPodToShipPod(podEntity3, hpc3.hardpoints.get(0), podEntity, hpc1.hardpoints.get(1));
-		
-		thc = podEntity3.getComponent(ThrusterComponent.class);
-		
-		thruster = new Thruster();
-		thruster.position.set(0.5f, 0);
-		thruster.direction.set(0, 1);
-		thruster.strength=pow * 0.25f;
-		thc.thrusters.add(thruster);
-
-		
-		return shipEntity;
-	}
-	
-	private Entity buildStaticShip() {
-		Entity shipEntity = ShipHelper.createShipEntity(engine, world);
-		
-		Entity podEntity = ShipHelper.createPodEntity(engine, world);
-		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,0), 0);
-		
-		podEntity = ShipHelper.createPodEntity(engine, world);
-		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,1), 90);
-
-		podEntity = ShipHelper.createPodEntity(engine, world);
-		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,-1), -90);
-		
-		return shipEntity;
-	}
+//	private Entity buildPlayerShip() {
+//		Entity shipEntity = ShipHelper.createShipEntity(engine, world);
+//		shipEntity.add(new CameraTargetComponent());
+//		shipEntity.add(new PlayerControlComponent());
+//		
+//		Entity podEntity = ShipHelper.createPodEntity(engine, world);
+//		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,0), 0);
+//		HardpointComponent hpc1 = podEntity.getComponent(HardpointComponent.class);
+//		
+//		hpc1.hardpoints.add(new Hardpoint(new Vector2(0, 0.5f)));
+//		hpc1.hardpoints.add(new Hardpoint(new Vector2(0, -0.5f)));
+//		
+//		float pow = 4f;
+//		
+//		ThrusterComponent thc = podEntity.getComponent(ThrusterComponent.class);
+//		Thruster thruster = new Thruster();
+//		thruster.position.set(-0.5f, 0);
+//		thruster.direction.set(1, 0);
+//		thruster.strength=pow;
+//		thc.thrusters.add(thruster);
+//		
+//		thruster = new Thruster();
+//		thruster.position.set(0.5f, 0);
+//		thruster.direction.set(-1, 0);
+//		thruster.strength=pow * 0.5f;
+//		thc.thrusters.add(thruster);
+//
+//		thruster = new Thruster();
+//		thruster.position.set(-0.5f, 0);
+//		thruster.direction.set(0, 1);
+//		thruster.strength=pow * 0.25f;
+//		thc.thrusters.add(thruster);
+//
+//		thruster = new Thruster();
+//		thruster.position.set(-0.5f, 0);
+//		thruster.direction.set(0, -1);
+//		thruster.strength=pow * 0.25f;
+//		thc.thrusters.add(thruster);
+//
+//		thruster = new Thruster();
+//		thruster.position.set(0.5f, 0);
+//		thruster.direction.set(0, 1);
+//		thruster.strength=pow * 0.25f;
+//		thc.thrusters.add(thruster);
+//
+//		thruster = new Thruster();
+//		thruster.position.set(0.5f, 0);
+//		thruster.direction.set(0, -1);
+//		thruster.strength=pow * 0.25f;
+//		thc.thrusters.add(thruster);
+//		
+//		Entity podEntity2 = ShipHelper.createPodEntity(engine, world);
+//
+//		HardpointComponent hpc2 = podEntity2.getComponent(HardpointComponent.class);
+//		hpc2.hardpoints.add(new Hardpoint(new Vector2(-0.5f, 0)));
+//
+//		ShipHelper.attachPodToShipPod(podEntity2, hpc2.hardpoints.get(0), podEntity, hpc1.hardpoints.get(0));
+//		
+//		
+//		thc = podEntity2.getComponent(ThrusterComponent.class);
+//		
+//		thruster = new Thruster();
+//		thruster.position.set(0.5f, 0);
+//		thruster.direction.set(0, -1);
+//		thruster.strength=pow * 0.25f;
+//		thc.thrusters.add(thruster);
+//		
+//		Entity podEntity3 = ShipHelper.createPodEntity(engine, world);
+//		
+//		HardpointComponent hpc3 = podEntity3.getComponent(HardpointComponent.class);
+//		hpc3.hardpoints.add(new Hardpoint(new Vector2(-0.5f, 0)));
+//
+//		ShipHelper.attachPodToShipPod(podEntity3, hpc3.hardpoints.get(0), podEntity, hpc1.hardpoints.get(1));
+//		
+//		thc = podEntity3.getComponent(ThrusterComponent.class);
+//		
+//		thruster = new Thruster();
+//		thruster.position.set(0.5f, 0);
+//		thruster.direction.set(0, 1);
+//		thruster.strength=pow * 0.25f;
+//		thc.thrusters.add(thruster);
+//
+//		
+//		return shipEntity;
+//	}
+//	
+//	private Entity buildStaticShip() {
+//		Entity shipEntity = ShipHelper.createShipEntity(engine, world);
+//		
+//		Entity podEntity = ShipHelper.createPodEntity(engine, world);
+//		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,0), 0);
+//		
+//		podEntity = ShipHelper.createPodEntity(engine, world);
+//		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,1), 90);
+//
+//		podEntity = ShipHelper.createPodEntity(engine, world);
+//		ShipHelper.addPodToShip(podEntity, shipEntity, new Vector2(0,-1), -90);
+//		
+//		return shipEntity;
+//	}
 	
 	
 	
