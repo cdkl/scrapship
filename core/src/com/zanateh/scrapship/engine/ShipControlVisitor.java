@@ -11,7 +11,6 @@ import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.ShipComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
-import com.zanateh.scrapship.ship.IShipControl;
 
 public class ShipControlVisitor implements IShipControl {
 

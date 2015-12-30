@@ -5,10 +5,10 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.utils.Array;
+import com.zanateh.scrapship.engine.IShipControl;
 import com.zanateh.scrapship.engine.ShipControlVisitor;
 import com.zanateh.scrapship.engine.components.PlayerControlComponent;
 import com.zanateh.scrapship.engine.components.ShipComponent;
-import com.zanateh.scrapship.ship.IShipControl;
 
 public class PlayerControlSystem extends IteratingSystem {
 

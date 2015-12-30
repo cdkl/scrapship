@@ -26,7 +26,6 @@ public class DragAndDropSystem extends IteratingSystem {
 	private ComponentMapper<SelectedComponent> selectedMapper = ComponentMapper.getFor(SelectedComponent.class);
 	private ComponentMapper<PodComponent> podMapper = ComponentMapper.getFor(PodComponent.class);
 	private ComponentMapper<FixtureComponent> fixtureMapper = ComponentMapper.getFor(FixtureComponent.class);
-	private ComponentMapper<HardpointComponent> hardpointMapper = ComponentMapper.getFor(HardpointComponent.class);
 	
 	private Family hardpointFamily = Family.all(HardpointComponent.class, TransformComponent.class).get();
 	
@@ -101,12 +100,12 @@ public class DragAndDropSystem extends IteratingSystem {
 				
 				// Attempt to connect to ship.
 				boolean connected = false;
-				HardpointComponent hc = hardpointMapper.get(entity);
+				ImmutableArray<Hardpoint> hps = ShipHelper.getHardpointsForPod(entity);
 				TransformComponent tc = transformMapper.get(entity);
-				if(hc != null) {
+				if(hps != null) {
 					IntersectReturn intersect = null;
 					
-					for(Hardpoint hardpoint : hc.hardpoints) {
+					for(Hardpoint hardpoint : hps) {
 						intersect = intersectHardpoints(entity, hardpoint, engine.getEntitiesFor(hardpointFamily));
 						if(intersect != null && intersect.hardpoint != null && intersect.entity != null ) {
 							ShipHelper.attachPodToShipPod(entity, hardpoint, intersect.entity, intersect.hardpoint);
@@ -152,9 +151,9 @@ public class DragAndDropSystem extends IteratingSystem {
 			if( otherEntity == entity) {
 				continue;
 			}
-			HardpointComponent ohc = hardpointMapper.get(otherEntity);
+			ImmutableArray<Hardpoint> hps = ShipHelper.getHardpointsForPod(otherEntity);
 			TransformComponent otc = transformMapper.get(otherEntity);
-			for(Hardpoint otherHardpoint : ohc.hardpoints) {
+			for(Hardpoint otherHardpoint : hps) {
 				if(otherHardpoint.attached == null && HardpointHelper.intersect(tc, hardpoint, otc, otherHardpoint)) {
 					return new IntersectReturn(otherEntity, otherHardpoint);
 				}

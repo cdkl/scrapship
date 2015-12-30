@@ -31,11 +31,6 @@ import com.zanateh.scrapship.engine.systems.PhysicsSystem;
 import com.zanateh.scrapship.engine.systems.PlayerControlSystem;
 import com.zanateh.scrapship.engine.systems.RenderingSystem;
 import com.zanateh.scrapship.engine.systems.ThrusterSystem;
-import com.zanateh.scrapship.scene.ScrapShipStage;
-import com.zanateh.scrapship.ship.ComponentShip;
-import com.zanateh.scrapship.ship.ComponentShipFactory;
-import com.zanateh.scrapship.ship.DestroyShipEventListener;
-import com.zanateh.scrapship.ship.component.ComponentJoiner;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 
@@ -44,8 +39,6 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 	private World world;
 	private PooledEngine engine;
 	AshleyPlayStateInputProcessor stage;
-//	ComponentShipFactory shipFactory;
-	ComponentJoiner componentJoiner;
 	
 //	ArrayList<ComponentShip> shipList = new ArrayList<ComponentShip>();
 	
@@ -294,7 +287,6 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 	public void Update(ScrapShipGame game) {
 		stage.act(game.getUpdateFrame());
 		engine.update(game.getUpdateFrame());
-		stage.postUpdate();
 	}
 
 	@Override

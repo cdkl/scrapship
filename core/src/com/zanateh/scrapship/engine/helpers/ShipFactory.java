@@ -12,10 +12,6 @@ import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
-import com.zanateh.scrapship.ship.ComponentShip;
-import com.zanateh.scrapship.ship.DynamicShipControl;
-import com.zanateh.scrapship.ship.component.ComponentThruster;
-import com.zanateh.scrapship.ship.component.PodComponent;
 
 public class ShipFactory {
 	Engine engine;

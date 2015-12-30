@@ -2,6 +2,7 @@ package com.zanateh.scrapship.engine;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -14,6 +15,7 @@ import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
+import com.zanateh.scrapship.engine.helpers.ShipHelper;
 
 public class ShipRenderVisitor {
 
@@ -21,8 +23,6 @@ public class ShipRenderVisitor {
 	private ComponentMapper<ThrusterComponent> thrusterMapper = ComponentMapper.getFor(ThrusterComponent.class);
 	private ComponentMapper<FixtureComponent> fixtureMapper = ComponentMapper.getFor(FixtureComponent.class);
 	private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
-	private ComponentMapper<HardpointComponent> hardpointMapper = ComponentMapper.getFor(HardpointComponent.class);
-
 
 	private Sprite podSprite;
 	private Sprite thrusterOnSprite;
@@ -84,9 +84,9 @@ public class ShipRenderVisitor {
 			}
 		}
 		
-		HardpointComponent hpc = hardpointMapper.get(entity);
-		if( hpc != null ) {
-			for( Hardpoint hardpoint : hpc.hardpoints ) {
+		ImmutableArray<Hardpoint> hps = ShipHelper.getHardpointsForPod(entity);
+		if( hps != null ) {
+			for( Hardpoint hardpoint : hps ) {
 				if(hardpoint.attached == null) {
 					hardpointSprite.setSize(hardpoint.hardpointRadius*2, hardpoint.hardpointRadius*2);
 					hardpointSprite.setOrigin(hardpointSprite.getWidth()/2, hardpointSprite.getHeight()/2);

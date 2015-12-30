@@ -1,6 +1,8 @@
 package com.zanateh.scrapship.engine.helpers;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
@@ -58,6 +60,7 @@ public class HardpointHelper {
 		
 		return false;
 	}
+
 	
 	
 }

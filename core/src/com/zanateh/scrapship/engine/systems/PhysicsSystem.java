@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
+import com.zanateh.scrapship.engine.helpers.ShipHelper;
 
 public class PhysicsSystem extends IteratingSystem {
 
@@ -37,20 +38,12 @@ public class PhysicsSystem extends IteratingSystem {
 		for(Entity entity : bodiesQueue) {
 			TransformComponent transformComponent = transformMapper.get(entity);
 			BodyComponent bodyComponent = bodyMapper.get(entity);
-			Vector2 position;
 			if(bodyComponent != null ) {
-				position = bodyComponent.body.getPosition();
-				transformComponent.rotation = bodyComponent.body.getAngle() * MathUtils.radiansToDegrees;
-				transformComponent.position.set(position);
+				ShipHelper.updateTransformFromBody(transformComponent, bodyComponent);
 			}
 			else {
 				FixtureComponent fixtureComponent = fixtureMapper.get(entity);
-				Body body = fixtureComponent.fixture.getBody();
-				
-				position = new Vector2(fixtureComponent.localPosition);
-	    		body.getTransform().mul(position);
-				transformComponent.position.set(position);
-				transformComponent.rotation = fixtureComponent.localRotation + (body.getAngle() * MathUtils.radiansToDegrees) % 360f;
+				ShipHelper.updateTransformFromFixture(transformComponent, fixtureComponent);
 			}
 		}
 		

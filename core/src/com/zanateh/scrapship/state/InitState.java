@@ -49,10 +49,6 @@ public class InitState extends GameState {
 		game.changeState(new AshleyPlayState());
 	}
 	
-	public void goToOld() {
-		game.changeState(new PlayState());
-	}
-	
 	@Override
 	public void Update(ScrapShipGame game) {
 		// TODO Auto-generated method stub

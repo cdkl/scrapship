@@ -24,13 +24,7 @@ public class InitInputProcessor implements InputProcessor {
 
 	@Override
 	public boolean keyTyped(char character) {
-		switch(character) {
-		case '1':
-			state.goToOld();
-			break;
-		default:
-			state.goToPlay();
-		}
+		state.goToPlay();
 		return true;
 	}
 

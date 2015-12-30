@@ -1,4 +1,4 @@
-package com.zanateh.scrapship.ship;
+package com.zanateh.scrapship.engine;
 
 public interface IShipControl {
 

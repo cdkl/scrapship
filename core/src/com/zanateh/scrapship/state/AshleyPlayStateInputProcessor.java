@@ -9,21 +9,18 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.zanateh.scrapship.camera.CameraManager;
+import com.zanateh.scrapship.engine.IShipControl;
 import com.zanateh.scrapship.engine.helpers.PickHelper;
 import com.zanateh.scrapship.engine.systems.DragAndDropSystem;
-import com.zanateh.scrapship.scene.ScrapShipStage;
-import com.zanateh.scrapship.ship.ComponentShip;
-import com.zanateh.scrapship.ship.ComponentShipFactory;
-import com.zanateh.scrapship.ship.IShipControl;
-import com.zanateh.scrapship.ship.component.PodComponent;
 
-public class AshleyPlayStateInputProcessor extends ScrapShipStage {
+public class AshleyPlayStateInputProcessor extends Stage {
 
 	GameState state;
 	IShipControl shipControl = null;
 	CameraManager cameraManager = null;
-	SelectionManager selectionManager = new SelectionManager();
 	// God this is horrible and shouldn't be here.
 	DragAndDropSystem dragAndDropSystem;
 	Engine engine;
@@ -32,7 +29,7 @@ public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 	
 	public AshleyPlayStateInputProcessor(AshleyPlayState state,int width, int height, 
 			SpriteBatch spriteBatch, Engine engine, CameraManager cameraManager, DragAndDropSystem dragAndDropSystem) {
-		super(width, height, spriteBatch);
+		super(new StretchViewport(width, height), spriteBatch);
 		this.state = state;
 		this.engine = engine;
 		this.cameraManager = cameraManager;
@@ -112,8 +109,8 @@ public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 	@Override
 	public boolean keyTyped(char character) {
 		if( character == '`') {
-			if( state instanceof PlayState ) {
-				((PlayState)state).reset();
+			if( state instanceof AshleyPlayState ) {
+				((AshleyPlayState)state).reset();
 			}
 			return true;
 		}
@@ -166,7 +163,6 @@ public class AshleyPlayStateInputProcessor extends ScrapShipStage {
 	public void act(float delta) {
 		super.act(delta);
 		touchScreenTranslatedPos.set(touchScreenPos);
-		selectionManager.setSelectionPosition(this.screenToStageCoordinates(touchScreenTranslatedPos));
 	}
 	
 	Vector2 touchScreenPos = new Vector2(0,0);
