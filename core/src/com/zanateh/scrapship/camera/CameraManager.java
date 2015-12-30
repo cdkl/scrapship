@@ -13,11 +13,15 @@ public class CameraManager {
 
 	Vector3 cameraPos = new Vector3();
 
+	private ScrapShipGame game;
+	private World world;
+	
 	boolean debugRender = false;
 	public boolean getDebugRender() { return debugRender; }
 	// Debug display stuff for box2d
 	private Matrix4 debugMatrix;
 	Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+	
 	
 	public enum CameraMode {
 		Free,
@@ -27,7 +31,9 @@ public class CameraManager {
 	CameraMode cameraMode = CameraMode.Free;
 	private IHasPosition target = null;
 	
-	public CameraManager() {
+	public CameraManager(ScrapShipGame game, World world) {
+		this.game = game;
+		this.world = world;
 	}
 
 	public void setCameraMode(CameraMode cameraMode)
@@ -43,7 +49,7 @@ public class CameraManager {
 		this.cameraPos.set(cameraPos);
 	}
 	
-	public void setupRenderCamera(ScrapShipGame game)
+	public void setupRenderCamera()
 	{
 		if(this.cameraMode == CameraMode.Target) {
 			Vector2 targetPos = target.getPosition();
@@ -58,7 +64,7 @@ public class CameraManager {
 		game.getSpriteBatch().setProjectionMatrix(game.getCamera().combined);
 	}
 	
-	public void finalizeRender(ScrapShipGame game, World world)
+	public void finalizeRender()
 	{
 		if(getDebugRender()) {
 			game.getSpriteBatch().begin();
