@@ -6,4 +6,5 @@ public interface ISelectable {
 	public void select();
 	public void release();
 	public void setPosition(Vector2 selectionPosition);
+	public void incrementSelectionRotation(float degrees);
 }
