@@ -46,7 +46,7 @@ public class InitState extends GameState {
 	}
 
 	public void goToPlay() {
-		game.changeState(new PlayState());
+		game.changeState(new AshleyPlayState());
 	}
 	
 	@Override
