@@ -10,7 +10,10 @@ import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.ShipComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
+import com.zanateh.scrapship.engine.components.WeaponMountComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
+import com.zanateh.scrapship.engine.components.subcomponents.Weapon;
+import com.zanateh.scrapship.engine.components.subcomponents.WeaponMount;
 
 public class ShipControlVisitor implements IShipControl {
 
@@ -18,6 +21,7 @@ public class ShipControlVisitor implements IShipControl {
 	private ComponentMapper<BodyComponent> bodyMapper = ComponentMapper.getFor(BodyComponent.class);
 	private ComponentMapper<ThrusterComponent> thrusterMapper = ComponentMapper.getFor(ThrusterComponent.class);
 	private ComponentMapper<FixtureComponent> fixtureMapper = ComponentMapper.getFor(FixtureComponent.class);
+	private ComponentMapper<WeaponMountComponent> weaponMountMapper = ComponentMapper.getFor(WeaponMountComponent.class);
 	
 	private float forwardThrust = 0.0f;
 	private float reverseThrust = 0.0f;
@@ -25,6 +29,8 @@ public class ShipControlVisitor implements IShipControl {
 	private float rightThrust = 0.0f;
 	private float ccwThrust = 0.0f;
 	private float cwThrust = 0.0f;
+	
+	boolean fireState = false;
 	
 	public void visit(Entity entity) {
 //		Gdx.app.log("ShipControlVisitor", String.format("F: %4.2f R: %4.2f L: %4.2f R: %4.2f CCW: %4.2f CW: %4.2f", 
@@ -79,6 +85,13 @@ public class ShipControlVisitor implements IShipControl {
 				}
 
 				
+			}
+			
+			WeaponMountComponent wmc = weaponMountMapper.get(podEntity);
+			if(fireState) {
+				for(WeaponMount mount : wmc.weaponMounts) {
+					mount.getWeapon().fire();
+				}
 			}
 			
 		}
@@ -147,6 +160,11 @@ public class ShipControlVisitor implements IShipControl {
 		cwThrust = thrust;
 	}
 
+	@Override
+	public void fire(boolean on) {
+		fireState = on;
+	}
+	
 	@Override
 	public void remove() {
 		// TODO Auto-generated method stub

@@ -24,7 +24,9 @@ import com.zanateh.scrapship.engine.components.PlayerControlComponent;
 import com.zanateh.scrapship.engine.components.RenderComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
+import com.zanateh.scrapship.engine.components.WeaponMountComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
+import com.zanateh.scrapship.engine.components.subcomponents.WeaponMount;
 
 public class ShipHelper {
 	
@@ -36,6 +38,7 @@ public class ShipHelper {
 	private static ComponentMapper<ShipComponent> shipMapper = ComponentMapper.getFor(ShipComponent.class);
 	private static ComponentMapper<HardpointComponent> hardpointMapper = ComponentMapper.getFor(HardpointComponent.class);
 	private static ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
+	private static ComponentMapper<WeaponMountComponent> weaponMountMapper = ComponentMapper.getFor(WeaponMountComponent.class);
 
 	public static Entity createPlayerShipEntity(Engine engine, World world) {
 		Entity shipEntity = createShipEntity(engine, world);
@@ -266,6 +269,15 @@ public class ShipHelper {
 		return new ImmutableArray<Hardpoint>(hc.hardpoints);
 	}
 
+	public static ImmutableArray<WeaponMount> getWeaponMountsForPod(Entity podEntity) {
+		WeaponMountComponent wmc = weaponMountMapper.get(podEntity);
+		if(wmc == null) {
+			return null;
+		}
+		// TODO Auto-generated method stub
+		return new ImmutableArray<WeaponMount>(wmc.weaponMounts);
+	}
+	
 	public static ImmutableArray<Hardpoint> getFreeHardpointsForShip(Entity shipEntity) {
 		Array<Hardpoint> returnArray = new Array<Hardpoint>();
 				

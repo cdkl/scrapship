@@ -20,9 +20,6 @@ public class RenderingSystem extends IteratingSystem {
 	private SpriteBatch batch;
 	private CameraManager camManager;
 	
-	private ComponentMapper<RenderComponent> spriteMapper;
-	private ComponentMapper<TransformComponent> transformMapper;
-	
 	private ShipRenderVisitor shipRenderVisitor = new ShipRenderVisitor();
 	
 	public RenderingSystem(SpriteBatch batch, CameraManager camManager) {
@@ -31,10 +28,6 @@ public class RenderingSystem extends IteratingSystem {
 		
 		this.batch = batch;
 		this.camManager = camManager;
-		
-		spriteMapper = ComponentMapper.getFor(RenderComponent.class);
-		transformMapper = ComponentMapper.getFor(TransformComponent.class);
-
 	}
 
 	@Override
