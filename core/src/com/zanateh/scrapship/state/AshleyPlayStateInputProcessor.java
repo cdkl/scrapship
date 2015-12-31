@@ -147,14 +147,15 @@ public class AshleyPlayStateInputProcessor extends Stage {
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		
+		currentTouchDown = false;		
 		Entity entity = PickHelper.getSelected(engine);
+
 		if( entity != null ) {
 			this.dragAndDropSystem.setSelectedPosition(new Vector2(screenX, screenY));
 			PickHelper.setUnselected(entity);
 			return true;
 		}
 
-		currentTouchDown = false;
 		return false;
 	}
 

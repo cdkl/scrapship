@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
+import com.zanateh.scrapship.engine.components.PlayerCommandPodComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.WeaponMountComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
@@ -85,6 +86,7 @@ public class ShipFactory {
 				ship = ShipHelper.createPlayerShipEntity(engine, world);
 
 				Entity comp1 = ShipHelper.createPodEntity(engine,  world);
+				comp1.add(new PlayerCommandPodComponent());
 				HardpointComponent comp1hc = hardpointMapper.get(comp1);
 				comp1hc.hardpoints.add(new Hardpoint(new Vector2(0,0.5f)));
 				comp1hc.hardpoints.add(new Hardpoint(new Vector2(0.5f,0)));

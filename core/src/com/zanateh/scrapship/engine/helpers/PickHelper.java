@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.zanateh.scrapship.engine.components.PickableComponent;
+import com.zanateh.scrapship.engine.components.PlayerCommandPodComponent;
 import com.zanateh.scrapship.engine.components.SelectedComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
 
@@ -18,6 +19,7 @@ public class PickHelper {
 	private static ComponentMapper<PickableComponent> pickableMapper = ComponentMapper.getFor(PickableComponent.class);
 	private static ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 	private static ComponentMapper<SelectedComponent> selectedMapper = ComponentMapper.getFor(SelectedComponent.class);
+	private static ComponentMapper<PlayerCommandPodComponent> pcpMapper = ComponentMapper.getFor(PlayerCommandPodComponent.class);
 	
 	public static ImmutableArray<Entity> pick(Engine engine, Viewport viewport, Vector2 pickLocation)
 	{
@@ -27,6 +29,12 @@ public class PickHelper {
 		for(Entity entity : engine.getEntitiesFor(pickableFamily)) {
 			PickableComponent pc = pickableMapper.get(entity);
 			TransformComponent tc = transformMapper.get(entity);
+			PlayerCommandPodComponent pcpc = pcpMapper.get(entity);
+			
+			if( pcpc != null ) {
+				// Don't want to be able to pick up central player pod
+				continue;
+			}
 			
 			Vector2 diffVec = new Vector2(pickLocation).sub(tc.position);
 			if( diffVec.len2() <= pc.radius*pc.radius ) {
