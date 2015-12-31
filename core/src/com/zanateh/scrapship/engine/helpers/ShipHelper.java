@@ -17,6 +17,7 @@ import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.CameraTargetComponent;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
+import com.zanateh.scrapship.engine.components.IntersectComponent;
 import com.zanateh.scrapship.engine.components.PickableComponent;
 import com.zanateh.scrapship.engine.components.PodComponent;
 import com.zanateh.scrapship.engine.components.ShipComponent;
@@ -26,6 +27,7 @@ import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
 import com.zanateh.scrapship.engine.components.WeaponMountComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
+import com.zanateh.scrapship.engine.components.subcomponents.Hitbox;
 import com.zanateh.scrapship.engine.components.subcomponents.WeaponMount;
 
 public class ShipHelper {
@@ -39,6 +41,7 @@ public class ShipHelper {
 	private static ComponentMapper<HardpointComponent> hardpointMapper = ComponentMapper.getFor(HardpointComponent.class);
 	private static ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 	private static ComponentMapper<WeaponMountComponent> weaponMountMapper = ComponentMapper.getFor(WeaponMountComponent.class);
+	private static ComponentMapper<IntersectComponent> IntersectMapper = ComponentMapper.getFor(IntersectComponent.class);
 
 	public static Entity createPlayerShipEntity(Engine engine, World world) {
 		Entity shipEntity = createShipEntity(engine, world);
@@ -72,13 +75,18 @@ public class ShipHelper {
 	public static Entity createPodEntity(Engine engine, World world) {
 		Entity e = new Entity();
 
-		e.add(new PodComponent());
+		PodComponent pc = new PodComponent();
+		pc.radius = podRadius;
+		e.add(pc);
 		e.add(new TransformComponent());
 		e.add(new FixtureComponent());
 		e.add(new HardpointComponent());
 		e.add(new ThrusterComponent());
 		e.add(new RenderComponent());
 		e.add(new PickableComponent());
+		IntersectComponent ic = new IntersectComponent();
+		ic.hitboxes.add(new Hitbox(ic, new Vector2(0,0), pc.radius));
+		e.add(ic);
 		
 		engine.addEntity(e);
 		
@@ -107,7 +115,7 @@ public class ShipHelper {
 		
 		FixtureDef fixDef = new FixtureDef();
 		CircleShape shape = new CircleShape();
-		shape.setRadius(podRadius);
+		shape.setRadius(pc.radius);
 		//setRotation(deg); // can't rotate a sphere
 		shape.setPosition(pos);
 		

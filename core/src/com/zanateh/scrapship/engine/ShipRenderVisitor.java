@@ -135,12 +135,19 @@ public class ShipRenderVisitor {
 		BeamComponent bc = beamMapper.get(entity);
 		if( bc != null ) {
 			// draw a line from tc.position in bc.direction for bc.range
-			laserbeamSprite.setSize(bc.range, bc.strength * 0.1f);
+			if(bc.strike == null) {
+				laserbeamSprite.setSize(bc.range, bc.strength * 0.1f);
+			}
+			else {
+				Vector2 diff = new Vector2(bc.strike);
+				diff.sub(tc.position);
+				laserbeamSprite.setSize(diff.len(), bc.strength * 0.1f);
+			}
 			laserbeamSprite.setOrigin(0, laserbeamSprite.getHeight()*0.5f);
 			
 			laserbeamSprite.setPosition(tc.position.x, tc.position.y);
 			laserbeamSprite.setCenterY(tc.position.y);
-			laserbeamSprite.setRotation(bc.direction.angle());
+			laserbeamSprite.setRotation(bc.getDirection().angle());
 			
 			laserbeamSprite.draw(batch);
 		}

@@ -88,9 +88,11 @@ public class ShipControlVisitor implements IShipControl {
 			}
 			
 			WeaponMountComponent wmc = weaponMountMapper.get(podEntity);
-			if(fireState) {
-				for(WeaponMount mount : wmc.weaponMounts) {
-					mount.getWeapon().fire();
+			if(wmc != null) {
+				if(fireState) {
+					for(WeaponMount mount : wmc.weaponMounts) {
+						mount.getWeapon().fire();
+					}
 				}
 			}
 			

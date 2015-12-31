@@ -28,6 +28,7 @@ import com.zanateh.scrapship.engine.helpers.ShipFactory.ShipType;
 import com.zanateh.scrapship.engine.systems.CameraTargetSystem;
 import com.zanateh.scrapship.engine.systems.CleanupSystem;
 import com.zanateh.scrapship.engine.systems.DragAndDropSystem;
+import com.zanateh.scrapship.engine.systems.OrdnanceSystem;
 import com.zanateh.scrapship.engine.systems.PhysicsSystem;
 import com.zanateh.scrapship.engine.systems.PlayerControlSystem;
 import com.zanateh.scrapship.engine.systems.RenderingSystem;
@@ -63,6 +64,7 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		DragAndDropSystem dads = new DragAndDropSystem(engine, world);
 		engine.addSystem(dads);
 		engine.addSystem(new WeaponSystem(engine));
+		engine.addSystem(new OrdnanceSystem(engine));
 		engine.addSystem(new CameraTargetSystem(cameraManager));
 		engine.addSystem(new RenderingSystem(game.getSpriteBatch(), cameraManager));
 		engine.addSystem(new CleanupSystem(engine));

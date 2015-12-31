@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.zanateh.scrapship.engine.components.BeamComponent;
 import com.zanateh.scrapship.engine.components.OneTickComponent;
+import com.zanateh.scrapship.engine.components.OrdnanceComponent;
 import com.zanateh.scrapship.engine.components.RenderComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
 import com.zanateh.scrapship.engine.components.WeaponMountComponent;
@@ -69,13 +70,14 @@ public class WeaponSystem extends IteratingSystem {
 		Entity beamEntity = new Entity();
 		beamEntity.add(new OneTickComponent());
 		beamEntity.add(new RenderComponent());
+		beamEntity.add(new OrdnanceComponent());
 		
 		TransformComponent tc = new TransformComponent();
 		tc.position.set(beamStartPos);
 		beamEntity.add(tc);
 		
 		BeamComponent bc = new BeamComponent();
-		bc.direction = beamDirection;
+		bc.setDirection(beamDirection);
 		bc.range = range;
 		bc.strength = strength;
 		beamEntity.add(bc);
