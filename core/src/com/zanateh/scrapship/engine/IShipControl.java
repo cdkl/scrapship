@@ -13,6 +13,8 @@ public interface IShipControl {
 	void setCCWThrust(float thrust);
 
 	void setCWThrust(float thrust);
+	
+	void fire(boolean on);
 
 	void remove();
 }

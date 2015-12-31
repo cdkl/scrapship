@@ -68,6 +68,9 @@ public class AshleyPlayStateInputProcessor extends Stage {
 				shipControl.setRightThrust(1);
 				return true;
 			}
+			if(keycode == Input.Keys.SPACE) {
+				shipControl.fire(true);
+			}
 		}
 		
 		
@@ -101,6 +104,10 @@ public class AshleyPlayStateInputProcessor extends Stage {
 				shipControl.setRightThrust(0);
 				return true;
 			}	
+			if(keycode == Input.Keys.SPACE) {
+				shipControl.fire(false);
+			}
+
 		}
 		
 		return false;

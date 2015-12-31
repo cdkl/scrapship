@@ -10,8 +10,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
+import com.zanateh.scrapship.engine.components.WeaponMountComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
+import com.zanateh.scrapship.engine.components.subcomponents.LaserWeapon;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
+import com.zanateh.scrapship.engine.components.subcomponents.WeaponMount;
 
 public class ShipFactory {
 	Engine engine;
@@ -95,6 +98,12 @@ public class ShipFactory {
 				comp1tc.thrusters.add(new Thruster(new Vector2(0.5f,0), new Vector2(0,-1), enginePower * 0.1f));
 				comp1tc.thrusters.add(new Thruster(new Vector2(-0.5f,0), new Vector2(0,1), enginePower * 0.1f));
 				comp1tc.thrusters.add(new Thruster(new Vector2(-0.5f,0), new Vector2(0,-1), enginePower * 0.1f));
+				WeaponMountComponent wmc = new WeaponMountComponent();
+				comp1.add(wmc);
+				WeaponMount mount = new WeaponMount(new Vector2(0.4f,0.4f), new Vector2(1,0));
+				mount.setWeapon(new LaserWeapon());
+				wmc.weaponMounts.add(mount);
+				
 				ShipHelper.addPodToShip(comp1, ship, new Vector2(), 0);
 			}
 			break;
