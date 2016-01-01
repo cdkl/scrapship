@@ -66,7 +66,7 @@ public class DragAndDropSystem extends IteratingSystem {
 				if( pc != null ) {
 					Entity shipEntity = pc.ship;
 					if( shipEntity != null ) { 
-						ShipHelper.removePodFromShip(entity);
+						ShipHelper.removePodFromShip(engine, entity);
 						ShipHelper.destroyIfNoComponentsForShip(shipEntity, engine, world);
 					}
 					entity.remove(FixtureComponent.class);
@@ -108,7 +108,7 @@ public class DragAndDropSystem extends IteratingSystem {
 					for(Hardpoint hardpoint : hps) {
 						intersect = intersectHardpoints(entity, hardpoint, engine.getEntitiesFor(hardpointFamily));
 						if(intersect != null && intersect.hardpoint != null && intersect.entity != null ) {
-							ShipHelper.attachPodToShipPod(entity, hardpoint, intersect.entity, intersect.hardpoint);
+							ShipHelper.attachPodToShipPod(engine, entity, hardpoint, intersect.entity, intersect.hardpoint);
 							connected = true;
 							break;
 						}
