@@ -43,7 +43,12 @@ public class IntersectHelper {
 				}
 			}
 			else if(hitLocations.size == 1) {
-				returnVec = getShortestVector(btc.position, returnVec, hitLocations.get(0));
+				if(returnVec == null ) {
+					returnVec = hitLocations.get(0);
+				}
+				else {
+					returnVec = getShortestVector(btc.position, returnVec, hitLocations.get(0));
+				}
 			}
 		}
 		

@@ -18,7 +18,7 @@ public class InitState extends GameState {
 		inputProcessor = new InitInputProcessor(this);
 		Gdx.input.setInputProcessor(inputProcessor);
 		
-		texture = new Texture(Gdx.files.internal("data/libgdx.png"));
+		texture = new Texture(Gdx.files.internal("img/libgdx.png"));
 	}
 
 	@Override

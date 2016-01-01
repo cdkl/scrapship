@@ -23,7 +23,7 @@ public class RenderingSystem extends IteratingSystem {
 	private ShipRenderVisitor shipRenderVisitor = new ShipRenderVisitor();
 	
 	public RenderingSystem(SpriteBatch batch, CameraManager camManager) {
-		super(Family.all(TransformComponent.class, RenderComponent.class).get());
+		super(Family.all(RenderComponent.class).get());
 		renderQueue = new Array<Entity>();
 		
 		this.batch = batch;
@@ -43,7 +43,7 @@ public class RenderingSystem extends IteratingSystem {
 		batch.begin();
 		
 		for(Entity entity : renderQueue) {
-			shipRenderVisitor.visit(entity, batch);
+			shipRenderVisitor.visit(entity, batch, delta);
 		}
 		batch.end();
 		

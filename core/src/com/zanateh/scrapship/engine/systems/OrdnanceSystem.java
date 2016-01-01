@@ -7,11 +7,16 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool.PooledEffect;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.zanateh.scrapship.effects.StrikeEffect;
 import com.zanateh.scrapship.engine.components.BeamComponent;
 import com.zanateh.scrapship.engine.components.IntersectComponent;
 import com.zanateh.scrapship.engine.components.OrdnanceComponent;
+import com.zanateh.scrapship.engine.components.RenderComponent;
+import com.zanateh.scrapship.engine.components.StrikeEffectComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
 import com.zanateh.scrapship.engine.helpers.IntersectHelper;
 
@@ -59,6 +64,28 @@ public class OrdnanceSystem extends IteratingSystem {
 				if(closestHit != null) {
 					Gdx.app.log("Ordnance", "Hit entity " + closestEntity.toString() + " at " + closestHit.toString());
 					bc.strike = closestHit;
+					
+					ImmutableArray<Entity> strikeEntities = engine.getEntitiesFor(Family.all(StrikeEffectComponent.class).get());
+					Entity strikeEntity;
+					if(strikeEntities.size() == 0 ){
+						strikeEntity = new Entity();
+						strikeEntity.add(new StrikeEffectComponent());
+						strikeEntity.add(new RenderComponent());
+						engine.addEntity(strikeEntity);
+					}
+					else {
+						strikeEntity = strikeEntities.first();
+					}
+					
+					StrikeEffectComponent sec = strikeEntity.getComponent(StrikeEffectComponent.class);
+					StrikeEffect se = new StrikeEffect();
+					PooledEffect pe = StrikeEffect.getEffectPool().obtain();
+					se.effect = pe;
+					se.position.set(closestHit);
+					pe.setPosition(closestHit.x, closestHit.y);
+					//pe.getEmitters().first().getVelocity().
+					pe.reset();
+					sec.strikeEffects.add(se);
 				}
 			}
 		}
