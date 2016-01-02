@@ -10,12 +10,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.zanateh.scrapship.effects.StrikeEffect;
+import com.zanateh.scrapship.effects.ScrapshipParticleEffect;
 import com.zanateh.scrapship.engine.components.BeamComponent;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.PodComponent;
-import com.zanateh.scrapship.engine.components.StrikeEffectComponent;
+import com.zanateh.scrapship.engine.components.ParticleEffectComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
@@ -23,16 +23,16 @@ import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
 import com.zanateh.scrapship.engine.components.subcomponents.WeaponMount;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
 
-public class ShipRenderVisitor {
+public class RenderVisitor {
 
 	private ComponentMapper<PodComponent> podMapper = ComponentMapper.getFor(PodComponent.class);
 	private ComponentMapper<ThrusterComponent> thrusterMapper = ComponentMapper.getFor(ThrusterComponent.class);
 	private ComponentMapper<FixtureComponent> fixtureMapper = ComponentMapper.getFor(FixtureComponent.class);
 	private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 	private ComponentMapper<BeamComponent> beamMapper = ComponentMapper.getFor(BeamComponent.class);
-	private ComponentMapper<StrikeEffectComponent> strikeEffectMapper = ComponentMapper.getFor(StrikeEffectComponent.class);
+	private ComponentMapper<ParticleEffectComponent> strikeEffectMapper = ComponentMapper.getFor(ParticleEffectComponent.class);
 	
-
+	
 	private Sprite podSprite;
 	private Sprite thrusterOnSprite;
 	private Sprite thrusterOffSprite;
@@ -40,7 +40,9 @@ public class ShipRenderVisitor {
 	private Sprite weaponMountSprite;
 	private Sprite laserbeamSprite;
 	
-	public ShipRenderVisitor() {
+	private static final float beamWidthFactor = 0.005f;
+	
+	public RenderVisitor() {
 		podSprite = new Sprite(new Texture(Gdx.files.internal("img/pod.png")));
 		podSprite.setSize(1,1);
 		podSprite.setOrigin(podSprite.getWidth()/2, podSprite.getHeight()/2);
@@ -89,20 +91,20 @@ public class ShipRenderVisitor {
 			renderBeams(entity, batch, bc);
 		}
 
-		StrikeEffectComponent sec = strikeEffectMapper.get(entity);
+		ParticleEffectComponent sec = strikeEffectMapper.get(entity);
 		if( sec != null ) {
-			renderStrikeEffects(sec.strikeEffects, batch, delta);
+			renderStrikeEffects(sec.particleEffects, batch, delta);
 		}
 		
 	}
 
 
-	private void renderStrikeEffects(Array<StrikeEffect> strikeEffects, SpriteBatch batch, float delta) {
-		for(StrikeEffect se : strikeEffects) {
-			se.effect.draw(batch, delta);
-			if(se.effect.isComplete()) {
+	private void renderStrikeEffects(Array<PooledEffect> strikeEffects, SpriteBatch batch, float delta) {
+		for(PooledEffect se : strikeEffects) {
+			se.draw(batch, delta);
+			if(se.isComplete()) {
 				strikeEffects.removeValue(se, true);
-				se.effect.free();
+				se.free();
 			}
 		}
 	}
@@ -111,13 +113,14 @@ public class ShipRenderVisitor {
 	private void renderBeams(Entity entity, SpriteBatch batch, BeamComponent bc) {
 		TransformComponent tc = transformMapper.get(entity);
 		// draw a line from tc.position in bc.direction for bc.range
+		
 		if(bc.strike == null) {
-			laserbeamSprite.setSize(bc.range, bc.strength * 0.1f);
+			laserbeamSprite.setSize(bc.range, bc.strength * beamWidthFactor);
 		}
 		else {
 			Vector2 diff = new Vector2(bc.strike);
 			diff.sub(tc.position);
-			laserbeamSprite.setSize(diff.len(), bc.strength * 0.1f);
+			laserbeamSprite.setSize(diff.len(), bc.strength * beamWidthFactor);
 		}
 		laserbeamSprite.setOrigin(0, laserbeamSprite.getHeight()*0.5f);
 		

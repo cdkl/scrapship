@@ -11,13 +11,14 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool.PooledEffect;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.zanateh.scrapship.effects.StrikeEffect;
+import com.zanateh.scrapship.effects.ScrapshipParticleEffect;
 import com.zanateh.scrapship.engine.components.BeamComponent;
 import com.zanateh.scrapship.engine.components.IntersectComponent;
 import com.zanateh.scrapship.engine.components.OrdnanceComponent;
 import com.zanateh.scrapship.engine.components.RenderComponent;
-import com.zanateh.scrapship.engine.components.StrikeEffectComponent;
+import com.zanateh.scrapship.engine.components.ParticleEffectComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
+import com.zanateh.scrapship.engine.helpers.DamageHelper;
 import com.zanateh.scrapship.engine.helpers.IntersectHelper;
 
 public class OrdnanceSystem extends IteratingSystem {
@@ -25,7 +26,7 @@ public class OrdnanceSystem extends IteratingSystem {
 	Array<Entity> ordnanceQueue = new Array<Entity>();
 	private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 	private ComponentMapper<BeamComponent> beamMapper = ComponentMapper.getFor(BeamComponent.class);
-	
+
 	Engine engine;
 	
 	public OrdnanceSystem(Engine engine) {
@@ -65,34 +66,19 @@ public class OrdnanceSystem extends IteratingSystem {
 					Gdx.app.log("Ordnance", "Hit entity " + closestEntity.toString() + " at " + closestHit.toString());
 					bc.strike = closestHit;
 					
-					ImmutableArray<Entity> strikeEntities = engine.getEntitiesFor(Family.all(StrikeEffectComponent.class).get());
-					Entity strikeEntity;
-					if(strikeEntities.size() == 0 ){
-						strikeEntity = new Entity();
-						strikeEntity.add(new StrikeEffectComponent());
-						strikeEntity.add(new RenderComponent());
-						engine.addEntity(strikeEntity);
-					}
-					else {
-						strikeEntity = strikeEntities.first();
-					}
+					// Create the drawable effect for a strike
+					ScrapshipParticleEffect.createStrikeEffect(engine, closestHit);
 					
-					StrikeEffectComponent sec = strikeEntity.getComponent(StrikeEffectComponent.class);
-					StrikeEffect se = new StrikeEffect();
-					PooledEffect pe = StrikeEffect.getEffectPool().obtain();
-					se.effect = pe;
-					se.position.set(closestHit);
-					pe.setPosition(closestHit.x, closestHit.y);
-					//pe.getEmitters().first().getVelocity().
-					pe.reset();
-					sec.strikeEffects.add(se);
+					// Evaluate the strike
+					DamageHelper.applyDamage(engine, closestEntity, entity, closestHit, deltaTime);
+					
 				}
 			}
 		}
 		
 		ordnanceQueue.clear();
 	}
-	
+
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 		ordnanceQueue.add(entity);

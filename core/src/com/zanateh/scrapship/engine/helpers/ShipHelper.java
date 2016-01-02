@@ -19,6 +19,7 @@ import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.CameraTargetComponent;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
+import com.zanateh.scrapship.engine.components.HitpointComponent;
 import com.zanateh.scrapship.engine.components.IntersectComponent;
 import com.zanateh.scrapship.engine.components.PickableComponent;
 import com.zanateh.scrapship.engine.components.PlayerCommandPodComponent;
@@ -87,6 +88,7 @@ public class ShipHelper {
 		e.add(new ThrusterComponent());
 		e.add(new RenderComponent());
 		e.add(new PickableComponent());
+		e.add(new HitpointComponent());
 		IntersectComponent ic = new IntersectComponent();
 		ic.hitboxes.add(new Hitbox(ic, new Vector2(0,0), pc.radius));
 		e.add(ic);
@@ -134,12 +136,12 @@ public class ShipHelper {
 		ShipHelper.updateTransformFromFixture(tc, fc);
 	}
 	
-	/** Properly remove a pod from a ship-- disconnection and all.
+	/** Properly remove a pod from a ship-- disconnection and all. Returns the resultant ship(s) (if any)
 	 * 
 	 * @param engine
 	 * @param podEntity
 	 */
-	public static void removePodFromShip(Engine engine, Entity podEntity) {
+	public static Array<Entity> removePodFromShip(Engine engine, Entity podEntity) {
 		HardpointComponent hc = hardpointMapper.get(podEntity);
 
 		if(hc != null ) {
@@ -151,10 +153,15 @@ public class ShipHelper {
 		
 		depopulatePodFromShip(podEntity);
 		
-		ShipDivider.divideShipIfBroken(engine, previousShipEntity);
+		if( ! ShipHelper.destroyIfNoComponentsForShip(previousShipEntity, engine) ) {	
+			return ShipDivider.divideShipIfBroken(engine, previousShipEntity);
+		}
+		else {
+			return new Array<Entity>();
+		}
 	}
 	
-	/** This function removes a pod from a ship, without changing its hardpoint state.
+	/** This function removes a pod from a ship, without changing its hardpoint state or deleting the parent ship.
 	 * 
 	 * @param podEntity
 	 */
@@ -247,15 +254,17 @@ public class ShipHelper {
 	
 	
 	
-	public static void destroyIfNoComponentsForShip(Entity shipEntity, Engine engine, World world) {
+	public static boolean destroyIfNoComponentsForShip(Entity shipEntity, Engine engine) {
 		ShipComponent shipSC = shipMapper.get(shipEntity);
 
 		if( shipSC.pods.size == 0 ) {
-			destroyShipInternal(shipEntity, engine, world);
+			destroyShipInternal(shipEntity, engine);
+			return true;
 		}
+		return false;
 	}
 	
-	public static void destroyShip(Entity shipEntity, Engine engine, World world) {
+	public static void destroyShip(Entity shipEntity, Engine engine) {
 		ShipComponent shipSC = shipMapper.get(shipEntity);
 
 		Array<Entity> podArray = new Array<Entity>(shipSC.pods);
@@ -267,12 +276,12 @@ public class ShipHelper {
 				engine.removeEntity(podEntity);
 			}
 		}
-		destroyShipInternal(shipEntity, engine, world);	
+		destroyShipInternal(shipEntity, engine);	
 	}
 	
-	private static void destroyShipInternal(Entity shipEntity, Engine engine, World world) {
+	private static void destroyShipInternal(Entity shipEntity, Engine engine) {
 		BodyComponent bc = bodyMapper.get(shipEntity);
-		world.destroyBody(bc.body);
+		bc.body.getWorld().destroyBody(bc.body);
 		engine.removeEntity(shipEntity);
 	}
 
