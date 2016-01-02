@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
+import com.zanateh.scrapship.engine.components.PlayerCommandPodComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.WeaponMountComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
@@ -58,25 +59,25 @@ public class ShipFactory {
 			
 				Entity comp1 = ShipHelper.createPodEntity(engine,  world);
 				HardpointComponent comp1hp = hardpointMapper.get(comp1);
-				comp1hp.hardpoints.add(new Hardpoint(new Vector2(0.5f,0)));
-				comp1hp.hardpoints.add(new Hardpoint(new Vector2(0,0.5f)));
+				comp1hp.hardpoints.add(new Hardpoint(comp1, new Vector2(0.5f,0)));
+				comp1hp.hardpoints.add(new Hardpoint(comp1, new Vector2(0,0.5f)));
 				ShipHelper.addPodToShip(comp1, ship, new Vector2(), 0);
 
 				Entity comp2 = ShipHelper.createPodEntity(engine,  world);
 				HardpointComponent comp2hp = hardpointMapper.get(comp2);
-				comp2hp.hardpoints.add(new Hardpoint(new Vector2(0.5f,0)));
-				ShipHelper.attachPodToShipPod(comp2, comp2hp.hardpoints.get(0), comp1, comp1hp.hardpoints.get(0));
+				comp2hp.hardpoints.add(new Hardpoint(comp2, new Vector2(0.5f,0)));
+				ShipHelper.attachPodToShipPod(engine, comp2, comp2hp.hardpoints.get(0), comp1, comp1hp.hardpoints.get(0));
 
 				Entity comp3 = ShipHelper.createPodEntity(engine,  world);
 				HardpointComponent comp3hp = hardpointMapper.get(comp3);
-				comp3hp.hardpoints.add(new Hardpoint(new Vector2(0.5f,0)));
-				comp3hp.hardpoints.add(new Hardpoint(new Vector2(-0.5f,0)));
-				ShipHelper.attachPodToShipPod(comp3, comp3hp.hardpoints.get(0), comp1, comp1hp.hardpoints.get(1));
+				comp3hp.hardpoints.add(new Hardpoint(comp3, new Vector2(0.5f,0)));
+				comp3hp.hardpoints.add(new Hardpoint(comp3, new Vector2(-0.5f,0)));
+				ShipHelper.attachPodToShipPod(engine, comp3, comp3hp.hardpoints.get(0), comp1, comp1hp.hardpoints.get(1));
 
 				Entity comp4 = ShipHelper.createPodEntity(engine,  world);
 				HardpointComponent comp4hp = hardpointMapper.get(comp4);
-				comp4hp.hardpoints.add(new Hardpoint(new Vector2(0.5f,0)));
-				ShipHelper.attachPodToShipPod(comp4, comp4hp.hardpoints.get(0), comp3, comp3hp.hardpoints.get(1));
+				comp4hp.hardpoints.add(new Hardpoint(comp4, new Vector2(0.5f,0)));
+				ShipHelper.attachPodToShipPod(engine, comp4, comp4hp.hardpoints.get(0), comp3, comp3hp.hardpoints.get(1));
 				
 			}
 			break;
@@ -85,11 +86,12 @@ public class ShipFactory {
 				ship = ShipHelper.createPlayerShipEntity(engine, world);
 
 				Entity comp1 = ShipHelper.createPodEntity(engine,  world);
+				comp1.add(new PlayerCommandPodComponent());
 				HardpointComponent comp1hc = hardpointMapper.get(comp1);
-				comp1hc.hardpoints.add(new Hardpoint(new Vector2(0,0.5f)));
-				comp1hc.hardpoints.add(new Hardpoint(new Vector2(0.5f,0)));
-				comp1hc.hardpoints.add(new Hardpoint(new Vector2(0,-0.5f)));
-				comp1hc.hardpoints.add(new Hardpoint(new Vector2(-0.5f,0)));
+				comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(0,0.5f)));
+				comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(0.5f,0)));
+				comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(0,-0.5f)));
+				comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(-0.5f,0)));
 				ThrusterComponent comp1tc = thrusterMapper.get(comp1);
 				float enginePower = 2;
 				comp1tc.thrusters.add(new Thruster(new Vector2(-0.5f,0), new Vector2(1,0), enginePower * 1f));
@@ -126,19 +128,19 @@ public class ShipFactory {
 		HardpointComponent hc = hardpointMapper.get(entity);
 		ThrusterComponent tc = thrusterMapper.get(entity);
 		if( rand.nextFloat() <= chanceOfHardpoint ) {
-			hc.hardpoints.add(new Hardpoint(new Vector2(0, 0.5f)));
+			hc.hardpoints.add(new Hardpoint(entity, new Vector2(0, 0.5f)));
 			logString += " +x ";
 		}
 		if( rand.nextFloat() <= chanceOfHardpoint ) {
-			hc.hardpoints.add(new Hardpoint(new Vector2(0.5f, 0)));
+			hc.hardpoints.add(new Hardpoint(entity, new Vector2(0.5f, 0)));
 			logString += " +y ";
 		}
 		if( rand.nextFloat() <= chanceOfHardpoint ) {
-			hc.hardpoints.add(new Hardpoint(new Vector2(0, -0.5f)));
+			hc.hardpoints.add(new Hardpoint(entity, new Vector2(0, -0.5f)));
 			logString += " -x ";
 		}
 		if( rand.nextFloat() <= chanceOfHardpoint ) {
-			hc.hardpoints.add(new Hardpoint(new Vector2(-0.5f, 0)));
+			hc.hardpoints.add(new Hardpoint(entity, new Vector2(-0.5f, 0)));
 			logString += " -y ";
 		}
 		Gdx.app.log("ShipFactory", logString);

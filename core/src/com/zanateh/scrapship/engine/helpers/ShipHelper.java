@@ -1,5 +1,7 @@
 package com.zanateh.scrapship.engine.helpers;
 
+import java.util.HashSet;
+
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
@@ -19,6 +21,7 @@ import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.IntersectComponent;
 import com.zanateh.scrapship.engine.components.PickableComponent;
+import com.zanateh.scrapship.engine.components.PlayerCommandPodComponent;
 import com.zanateh.scrapship.engine.components.PodComponent;
 import com.zanateh.scrapship.engine.components.ShipComponent;
 import com.zanateh.scrapship.engine.components.PlayerControlComponent;
@@ -41,7 +44,7 @@ public class ShipHelper {
 	private static ComponentMapper<HardpointComponent> hardpointMapper = ComponentMapper.getFor(HardpointComponent.class);
 	private static ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 	private static ComponentMapper<WeaponMountComponent> weaponMountMapper = ComponentMapper.getFor(WeaponMountComponent.class);
-	private static ComponentMapper<IntersectComponent> IntersectMapper = ComponentMapper.getFor(IntersectComponent.class);
+	private static ComponentMapper<PlayerCommandPodComponent> playerCommandPodMapper = ComponentMapper.getFor(PlayerCommandPodComponent.class);
 
 	public static Entity createPlayerShipEntity(Engine engine, World world) {
 		Entity shipEntity = createShipEntity(engine, world);
@@ -131,18 +134,37 @@ public class ShipHelper {
 		ShipHelper.updateTransformFromFixture(tc, fc);
 	}
 	
-	public static void removePodFromShip(Entity podEntity) {
+	/** Properly remove a pod from a ship-- disconnection and all.
+	 * 
+	 * @param engine
+	 * @param podEntity
+	 */
+	public static void removePodFromShip(Engine engine, Entity podEntity) {
+		HardpointComponent hc = hardpointMapper.get(podEntity);
+
+		if(hc != null ) {
+			HardpointHelper.detachAll(hc.hardpoints);
+		}
+
+		PodComponent pc = podMapper.get(podEntity);
+		Entity previousShipEntity = pc.ship;
+		
+		depopulatePodFromShip(podEntity);
+		
+		ShipDivider.divideShipIfBroken(engine, previousShipEntity);
+	}
+	
+	/** This function removes a pod from a ship, without changing its hardpoint state.
+	 * 
+	 * @param podEntity
+	 */
+	public static void depopulatePodFromShip(Entity podEntity) {
 		PodComponent pc = podMapper.get(podEntity);
 		FixtureComponent fc = fixtureMapper.get(podEntity);
-		HardpointComponent hc = hardpointMapper.get(podEntity);
 
 		Entity shipEntity = pc.ship;
 		BodyComponent shipBC = bodyMapper.get(shipEntity);
 		ShipComponent shipSC = shipMapper.get(shipEntity);
-		
-		if(hc != null ) {
-			HardpointHelper.detachAll(hc.hardpoints);
-		}
 		
 		shipSC.pods.removeValue(podEntity, true);
 		shipBC.body.destroyFixture(fc.fixture);
@@ -150,7 +172,7 @@ public class ShipHelper {
 		pc.ship = null;
 	}
 	
-	public static void attachPodToShipPod(Entity podEntity, Hardpoint hp1, Entity shipPodEntity, Hardpoint hp2) {
+	public static void attachPodToShipPod(Engine engine, Entity podEntity, Hardpoint hp1, Entity shipPodEntity, Hardpoint hp2) {
 		if( hp1.attached != null ) {
 			throw new RuntimeException("Cannot attach hardpoints: hardpoint " + hp1.toString() + " already attached to " + hp1.attached.toString());
 		}
@@ -163,7 +185,7 @@ public class ShipHelper {
 		PodComponent shipPodComponent = podMapper.get(shipPodEntity);
 		Entity previousShipEntity = podEntityComponent.ship;
 		if( previousShipEntity != null ) {
-			removePodFromShip(podEntity);
+			removePodFromShip(engine, podEntity);
 		}
 		
 		// Attach hardpoints
@@ -241,7 +263,7 @@ public class ShipHelper {
 		for(Entity podEntity : podArray ) {
 			PodComponent pc = podMapper.get(podEntity);
 			if(pc.ship == shipEntity) {
-				removePodFromShip(podEntity);
+				depopulatePodFromShip(podEntity);
 				engine.removeEntity(podEntity);
 			}
 		}
@@ -315,8 +337,8 @@ public class ShipHelper {
 		transformComponent.rotation = bodyComponent.body.getAngle() * MathUtils.radiansToDegrees;
 		transformComponent.position.set(position);
 	}
-
 	
 }
+
 
 
