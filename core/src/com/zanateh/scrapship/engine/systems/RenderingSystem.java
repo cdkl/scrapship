@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.zanateh.scrapship.camera.CameraManager;
-import com.zanateh.scrapship.engine.ShipRenderVisitor;
+import com.zanateh.scrapship.engine.RenderVisitor;
 import com.zanateh.scrapship.engine.components.RenderComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
 
@@ -20,7 +20,7 @@ public class RenderingSystem extends IteratingSystem {
 	private SpriteBatch batch;
 	private CameraManager camManager;
 	
-	private ShipRenderVisitor shipRenderVisitor = new ShipRenderVisitor();
+	private RenderVisitor shipRenderVisitor = new RenderVisitor();
 	
 	public RenderingSystem(SpriteBatch batch, CameraManager camManager) {
 		super(Family.all(RenderComponent.class).get());

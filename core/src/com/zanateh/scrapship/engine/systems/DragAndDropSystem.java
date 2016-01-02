@@ -67,7 +67,6 @@ public class DragAndDropSystem extends IteratingSystem {
 					Entity shipEntity = pc.ship;
 					if( shipEntity != null ) { 
 						ShipHelper.removePodFromShip(engine, entity);
-						ShipHelper.destroyIfNoComponentsForShip(shipEntity, engine, world);
 					}
 					entity.remove(FixtureComponent.class);
 					

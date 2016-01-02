@@ -1,4 +1,4 @@
-spark
+explosion
 - Delay -
 active: true
 lowMin: 0.0
@@ -8,22 +8,26 @@ lowMin: 100.0
 lowMax: 100.0
 - Count - 
 min: 0
-max: 75
+max: 200
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 100.0
-highMax: 100.0
+highMin: 3000.0
+highMax: 3000.0
 relative: false
-scalingCount: 1
+scalingCount: 3
 scaling0: 1.0
-timelineCount: 1
+scaling1: 1.0
+scaling2: 0.0
+timelineCount: 3
 timeline0: 0.0
+timeline1: 0.89726025
+timeline2: 0.98630136
 - Life - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 200.0
-highMax: 400.0
+highMin: 400.0
+highMax: 1200.0
 relative: false
 scalingCount: 3
 scaling0: 1.0
@@ -73,18 +77,20 @@ timeline0: 0.0
 - Scale - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 16.0
-highMax: 16.0
+highMin: 40.0
+highMax: 80.0
 relative: false
-scalingCount: 1
+scalingCount: 2
 scaling0: 1.0
-timelineCount: 1
+scaling1: 0.3529412
+timelineCount: 2
 timeline0: 0.0
+timeline1: 1.0
 - Velocity - 
 active: true
 lowMin: 60.0
 lowMax: 60.0
-highMin: 90.0
+highMin: 10.0
 highMax: 300.0
 relative: false
 scalingCount: 1
