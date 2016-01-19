@@ -8,34 +8,34 @@ import com.badlogic.gdx.utils.Array;
 import com.zanateh.scrapship.engine.IShipControl;
 import com.zanateh.scrapship.engine.ShipControlVisitor;
 import com.zanateh.scrapship.engine.components.PlayerControlComponent;
+import com.zanateh.scrapship.engine.components.ShipAIComponent;
 import com.zanateh.scrapship.engine.components.ShipComponent;
 
-public class PlayerControlSystem extends IteratingSystem {
+public class AISystem extends IteratingSystem {
 
-	private Array<Entity> playerControlledEntities = new Array<Entity>();
+	private Array<Entity> AIEntities = new Array<Entity>();
 	
-	private ComponentMapper<ShipComponent> shipMapper = ComponentMapper.getFor(ShipComponent.class);
-	private ComponentMapper<PlayerControlComponent> playerControlMapper = ComponentMapper.getFor(PlayerControlComponent.class);
+	private ComponentMapper<ShipAIComponent> shipAIMapper = ComponentMapper.getFor(ShipAIComponent.class);
 	
-	public PlayerControlSystem() {
-		super( Family.all(PlayerControlComponent.class).get());		
+	public AISystem() {
+		super( Family.all(ShipAIComponent.class).get());		
 	}
 	
 	@Override
 	public void update(float delta) {
 		super.update(delta);
 		
-		for(Entity entity : playerControlledEntities) {
-			PlayerControlComponent pcc = playerControlMapper.get(entity);
-			pcc.shipControl.visit(entity);
+		for(Entity entity : AIEntities) {
+			ShipAIComponent aic = shipAIMapper.get(entity);
+			aic.shipStateMachine.update(entity, delta);
 		}
 		
-		playerControlledEntities.clear();
+		AIEntities.clear();
 	}
 	
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
-		playerControlledEntities.add(entity);
+		AIEntities.add(entity);
 
 	}
 

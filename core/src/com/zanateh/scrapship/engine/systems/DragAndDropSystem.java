@@ -117,7 +117,7 @@ public class DragAndDropSystem extends IteratingSystem {
 				
 				if( ! connected ) {
 					// If we're dropping a PodComponent, then we'll create a ship in the new location.
-					Entity shipEntity = ShipHelper.createShipEntity(engine, world);
+					Entity shipEntity = ShipHelper.createShipEntity(engine, world, false);
 					Vector2 dropPosition = new Vector2(this.selectedPosition);
 					viewport.unproject(dropPosition);
 					ShipHelper.setShipTransform(shipEntity, dropPosition, tc.rotation);

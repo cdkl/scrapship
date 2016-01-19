@@ -29,6 +29,14 @@ public class ShipControlVisitor implements IShipControl {
 	private float rightThrust = 0.0f;
 	private float ccwThrust = 0.0f;
 	private float cwThrust = 0.0f;
+
+	Vector2 forward = new Vector2(1,0);
+	Vector2 reverse = new Vector2(-1,0);
+	Vector2 left = new Vector2(0,1);
+	Vector2 right = new Vector2(0,-1);
+	float ccw = 1;
+	float cw = -1;
+
 	
 	boolean fireState = false;
 	
@@ -43,14 +51,6 @@ public class ShipControlVisitor implements IShipControl {
 		
 		BodyComponent bc = bodyMapper.get(entity);
 		Body body = bc.body;
-		
-		Vector2 forward = new Vector2(1,0);
-		Vector2 reverse = new Vector2(-1,0);
-		Vector2 left = new Vector2(0,1);
-		Vector2 right = new Vector2(0,-1);
-		float ccw = 1;
-		float cw = -1;
-		
 		
 		ShipComponent shipComponent = shipMapper.get(entity);
 
@@ -162,6 +162,15 @@ public class ShipControlVisitor implements IShipControl {
 		cwThrust = thrust;
 	}
 
+	public void resetThrust() {
+		forwardThrust = 0.0f;
+		reverseThrust = 0.0f;
+		leftThrust = 0.0f;
+		rightThrust = 0.0f;
+		ccwThrust = 0.0f;
+		cwThrust = 0.0f;
+	}
+	
 	@Override
 	public void fire(boolean on) {
 		fireState = on;

@@ -67,7 +67,7 @@ public class ShipDivider {
 			}
 			// Create a ship!
 			BodyComponent bc = bodyMapper.get(ship);
-			Entity newShipEntity = ShipHelper.createShipEntity(engine, bc.body.getWorld());
+			Entity newShipEntity = ShipHelper.createShipEntity(engine, bc.body.getWorld(), false);
 
 			FixtureComponent firstPodFixture = fixtureMapper.get(disconnectedPods.first());
 			TransformComponent firstPodTC = transformMapper.get(disconnectedPods.first());

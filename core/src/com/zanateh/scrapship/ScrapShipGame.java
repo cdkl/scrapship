@@ -28,7 +28,8 @@ public class ScrapShipGame implements ApplicationListener {
 	public void create() {		
 	
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 10, 7);
+		float height = 7f;
+		camera.setToOrtho(false, height * Gdx.graphics.getWidth() / Gdx.graphics.getHeight(), height);
 		batch = new SpriteBatch();
 	
 		changeState(new InitState());
