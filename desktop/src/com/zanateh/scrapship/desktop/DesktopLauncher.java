@@ -7,6 +7,10 @@ import com.zanateh.scrapship.ScrapShipGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.title = "Scrapship";
+		config.fullscreen = false;
+		config.width = 1280;
+		config.height = 720;
 		new LwjglApplication(new ScrapShipGame(), config);
 	}
 }

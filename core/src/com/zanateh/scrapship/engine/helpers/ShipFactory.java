@@ -33,6 +33,7 @@ public class ShipFactory {
 	
 	public enum ShipType {
 		RandomShip,
+		ManeuvreShip,
 		DebugShip,
 		PlayerShip,
 		EmptyShip
@@ -46,16 +47,24 @@ public class ShipFactory {
 		case RandomShip:
 			{
 				Gdx.app.log("ShipFactory", "Creating random ship");
-				ship = ShipHelper.createShipEntity(engine, world);
+				ship = ShipHelper.createShipEntity(engine, world, true);
 
 				Entity comp1 = generateRandomPodComponent();
 				ShipHelper.addPodToShip(comp1, ship, new Vector2(0,0), 0);
 			}
 			break;
+			
+		case ManeuvreShip:
+		    {
+				ship = ShipHelper.createShipEntity(engine, world, true);
+				Entity comp1 = createManeuvrePod(0.5f);
+				ShipHelper.addPodToShip(comp1, ship, new Vector2(), 0);
+		    }
+		    break;
 		
 		case DebugShip:
 			{
-				ship = ShipHelper.createShipEntity(engine, world);
+				ship = ShipHelper.createShipEntity(engine, world, true);
 			
 				Entity comp1 = ShipHelper.createPodEntity(engine,  world);
 				HardpointComponent comp1hp = hardpointMapper.get(comp1);
@@ -85,21 +94,7 @@ public class ShipFactory {
 			{
 				ship = ShipHelper.createPlayerShipEntity(engine, world);
 
-				Entity comp1 = ShipHelper.createPodEntity(engine,  world);
-				comp1.add(new PlayerCommandPodComponent());
-				HardpointComponent comp1hc = hardpointMapper.get(comp1);
-				comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(0,0.5f)));
-				comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(0.5f,0)));
-				comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(0,-0.5f)));
-				comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(-0.5f,0)));
-				ThrusterComponent comp1tc = thrusterMapper.get(comp1);
-				float enginePower = 2;
-				comp1tc.thrusters.add(new Thruster(new Vector2(-0.5f,0), new Vector2(1,0), enginePower * 1f));
-				comp1tc.thrusters.add(new Thruster(new Vector2(0.5f,0), new Vector2(-1,0), enginePower * 0.4f));
-				comp1tc.thrusters.add(new Thruster(new Vector2(0.5f,0), new Vector2(0,1), enginePower * 0.1f));
-				comp1tc.thrusters.add(new Thruster(new Vector2(0.5f,0), new Vector2(0,-1), enginePower * 0.1f));
-				comp1tc.thrusters.add(new Thruster(new Vector2(-0.5f,0), new Vector2(0,1), enginePower * 0.1f));
-				comp1tc.thrusters.add(new Thruster(new Vector2(-0.5f,0), new Vector2(0,-1), enginePower * 0.1f));
+				Entity comp1 = createManeuvrePod(1.0f);
 				WeaponMountComponent wmc = new WeaponMountComponent();
 				comp1.add(wmc);
 				WeaponMount mount = new WeaponMount(new Vector2(0.4f,0.4f), new Vector2(1,0));
@@ -119,6 +114,25 @@ public class ShipFactory {
 		
 		return ship;
 		
+	}
+
+	private Entity createManeuvrePod(float power) {
+		Entity comp1 = ShipHelper.createPodEntity(engine,  world);
+		comp1.add(new PlayerCommandPodComponent());
+		HardpointComponent comp1hc = hardpointMapper.get(comp1);
+		comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(0,0.5f)));
+		comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(0.5f,0)));
+		comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(0,-0.5f)));
+		comp1hc.hardpoints.add(new Hardpoint(comp1, new Vector2(-0.5f,0)));
+		ThrusterComponent comp1tc = thrusterMapper.get(comp1);
+		float enginePower = 2;
+		comp1tc.thrusters.add(new Thruster(new Vector2(-0.5f,0), new Vector2(1,0), enginePower * power * 1f));
+		comp1tc.thrusters.add(new Thruster(new Vector2(0.5f,0), new Vector2(-1,0), enginePower * power * 0.4f));
+		comp1tc.thrusters.add(new Thruster(new Vector2(0.5f,0), new Vector2(0,1), enginePower * power * 0.1f));
+		comp1tc.thrusters.add(new Thruster(new Vector2(0.5f,0), new Vector2(0,-1), enginePower * power * 0.1f));
+		comp1tc.thrusters.add(new Thruster(new Vector2(-0.5f,0), new Vector2(0,1), enginePower * power * 0.1f));
+		comp1tc.thrusters.add(new Thruster(new Vector2(-0.5f,0), new Vector2(0,-1), enginePower * power * 0.1f));
+		return comp1;
 	}
 
 	private Entity generateRandomPodComponent() {

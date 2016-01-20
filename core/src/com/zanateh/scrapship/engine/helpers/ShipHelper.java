@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.zanateh.scrapship.engine.ai.WanderState;
 import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.CameraTargetComponent;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
@@ -27,6 +28,7 @@ import com.zanateh.scrapship.engine.components.PodComponent;
 import com.zanateh.scrapship.engine.components.ShipComponent;
 import com.zanateh.scrapship.engine.components.PlayerControlComponent;
 import com.zanateh.scrapship.engine.components.RenderComponent;
+import com.zanateh.scrapship.engine.components.ShipAIComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
 import com.zanateh.scrapship.engine.components.WeaponMountComponent;
@@ -48,13 +50,13 @@ public class ShipHelper {
 	private static ComponentMapper<PlayerCommandPodComponent> playerCommandPodMapper = ComponentMapper.getFor(PlayerCommandPodComponent.class);
 
 	public static Entity createPlayerShipEntity(Engine engine, World world) {
-		Entity shipEntity = createShipEntity(engine, world);
+		Entity shipEntity = createShipEntity(engine, world, false);
 		shipEntity.add(new CameraTargetComponent());
 		shipEntity.add(new PlayerControlComponent());
 		return shipEntity;
 	}
 	
-	public static Entity createShipEntity(Engine engine, World world) {
+	public static Entity createShipEntity(Engine engine, World world, boolean addAI) {
 		Entity e = new Entity();
 
 		e.add(new ShipComponent());
@@ -71,7 +73,14 @@ public class ShipHelper {
 		bc.body = world.createBody(def);
 		e.add(bc);
 		
-		engine.addEntity(e);;
+		if(addAI) {
+			e.add(new PlayerControlComponent());
+			ShipAIComponent ai = new ShipAIComponent();
+			ai.shipStateMachine.setCurrentState(new WanderState(e, ai.shipStateMachine));
+			e.add(ai);
+		}
+		
+		engine.addEntity(e);
 		
 		return e;
 	}

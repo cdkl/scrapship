@@ -25,6 +25,7 @@ import com.zanateh.scrapship.engine.helpers.HardpointHelper;
 import com.zanateh.scrapship.engine.helpers.ShipFactory;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
 import com.zanateh.scrapship.engine.helpers.ShipFactory.ShipType;
+import com.zanateh.scrapship.engine.systems.AISystem;
 import com.zanateh.scrapship.engine.systems.CameraTargetSystem;
 import com.zanateh.scrapship.engine.systems.CleanupSystem;
 import com.zanateh.scrapship.engine.systems.DragAndDropSystem;
@@ -57,8 +58,8 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		
 		engine = new PooledEngine();
 
-		PlayerControlSystem pcs = new PlayerControlSystem();
-		engine.addSystem(pcs);
+		engine.addSystem(new AISystem());
+		engine.addSystem(new PlayerControlSystem());
 		engine.addSystem(new ThrusterSystem());
 		engine.addSystem(new PhysicsSystem(world));
 		DragAndDropSystem dads = new DragAndDropSystem(engine, world);
@@ -76,11 +77,11 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		stage.getViewport().setCamera(game.getCamera());
 		Gdx.input.setInputProcessor(stage);
 		
-		stage.setShipControl(pcs.getShipControl());
-		
 		shipFactory = new ShipFactory(engine, world);
 		
 		Entity e = shipFactory.createShip(ShipType.PlayerShip);
+		PlayerControlComponent pcc = e.getComponent(PlayerControlComponent.class);
+		stage.setShipControl(pcc.shipControl);
 
 		Random rand = new Random();
 		rand.setSeed(1);
@@ -88,7 +89,7 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		float distRange = 10;
 		
 		for( int i = 0; i < 10; ++i ) {
-			Entity randomShip = shipFactory.createShip(ShipType.RandomShip);
+			Entity randomShip = shipFactory.createShip(ShipType.ManeuvreShip);
 			ShipHelper.setShipTransform(randomShip, 
 					new Vector2((float)rand.nextGaussian() * distRange, (float) rand.nextGaussian() * distRange ), 
 					rand.nextInt(360));
