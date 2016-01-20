@@ -17,6 +17,7 @@ import com.zanateh.scrapship.engine.components.WeaponMountComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.LaserWeapon;
 import com.zanateh.scrapship.engine.components.subcomponents.Weapon;
 import com.zanateh.scrapship.engine.components.subcomponents.WeaponMount;
+import com.zanateh.scrapship.engine.entity.ScrapEntity;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
 
 public class WeaponSystem extends IteratingSystem {
@@ -54,7 +55,7 @@ public class WeaponSystem extends IteratingSystem {
 						tc.transformPositionToGlobal(beamStartPos);
 						beamDirection.rotate(tc.rotation);
 
-						createBeam(beamStartPos, beamDirection, laserWeapon.range, laserWeapon.strength);
+						createBeam(beamStartPos, beamDirection, laserWeapon.range, laserWeapon.strength, podEntity);
 						
 						laserWeapon.firing = false;
 						
@@ -66,11 +67,11 @@ public class WeaponSystem extends IteratingSystem {
 		weaponQueue.clear();
 	}
 	
-	private void createBeam(Vector2 beamStartPos, Vector2 beamDirection, float range, float strength) {
-		Entity beamEntity = new Entity();
+	private void createBeam(Vector2 beamStartPos, Vector2 beamDirection, float range, float strength, Entity podEntity) {
+		Entity beamEntity = new ScrapEntity();
 		beamEntity.add(new OneTickComponent());
 		beamEntity.add(new RenderComponent());
-		beamEntity.add(new OrdnanceComponent());
+		beamEntity.add(new OrdnanceComponent(podEntity));
 		
 		TransformComponent tc = new TransformComponent();
 		tc.position.set(beamStartPos);

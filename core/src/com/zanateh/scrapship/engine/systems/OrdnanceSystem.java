@@ -18,14 +18,17 @@ import com.zanateh.scrapship.engine.components.OrdnanceComponent;
 import com.zanateh.scrapship.engine.components.RenderComponent;
 import com.zanateh.scrapship.engine.components.ParticleEffectComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
+import com.zanateh.scrapship.engine.entity.ScrapEntity;
 import com.zanateh.scrapship.engine.helpers.DamageHelper;
 import com.zanateh.scrapship.engine.helpers.IntersectHelper;
+import com.zanateh.scrapship.engine.message.AttackMessage;
 
 public class OrdnanceSystem extends IteratingSystem {
 
 	Array<Entity> ordnanceQueue = new Array<Entity>();
 	private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 	private ComponentMapper<BeamComponent> beamMapper = ComponentMapper.getFor(BeamComponent.class);
+	private ComponentMapper<OrdnanceComponent> ordnanceMapper = ComponentMapper.getFor(OrdnanceComponent.class);
 
 	Engine engine;
 	
@@ -65,6 +68,9 @@ public class OrdnanceSystem extends IteratingSystem {
 				if(closestHit != null) {
 					Gdx.app.log("Ordnance", "Hit entity " + closestEntity.toString() + " at " + closestHit.toString());
 					bc.strike = closestHit;
+					
+					OrdnanceComponent ordnanceComponent = ordnanceMapper.get(entity);
+					new AttackMessage(((ScrapEntity)entity).ID(), ((ScrapEntity)closestEntity).ID(), 0f, ordnanceComponent.firingEntity).send();
 					
 					// Create the drawable effect for a strike
 					ScrapshipParticleEffect.createStrikeEffect(engine, closestHit);

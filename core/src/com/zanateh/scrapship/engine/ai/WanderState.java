@@ -10,11 +10,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.zanateh.scrapship.engine.components.PlayerControlComponent;
 import com.zanateh.scrapship.engine.components.TransformComponent;
+import com.zanateh.scrapship.engine.message.AttackMessage;
+import com.zanateh.scrapship.engine.message.Message;
 
 public class WanderState extends State {
 
 	Vector2 wanderGoal = new Vector2();
-	final static float WANDER_EXTENT = 30f;
+	final static float WANDER_EXTENT = 20f;
 	final static float SEEK_TOLERANCE = 2f;
 	final static float ARC_HALF_WIDTH = 45f;
 	final static float COURSE_TOLERANCE = 5f;
@@ -76,5 +78,14 @@ public class WanderState extends State {
 	public void exit(Entity entity) {
 	}
 	
+	@Override
+	public boolean processMessage(Entity entity, Message message) {
+		if(message instanceof AttackMessage) {
+			// react!
+			Gdx.app.log("AI", "I'm being attacked!");
+			return true;
+		}
+		return false;
+	}
 	
 }

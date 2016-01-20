@@ -21,6 +21,7 @@ import com.zanateh.scrapship.engine.components.PlayerControlComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
+import com.zanateh.scrapship.engine.entity.EntityRegistry;
 import com.zanateh.scrapship.engine.helpers.HardpointHelper;
 import com.zanateh.scrapship.engine.helpers.ShipFactory;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
@@ -29,6 +30,7 @@ import com.zanateh.scrapship.engine.systems.AISystem;
 import com.zanateh.scrapship.engine.systems.CameraTargetSystem;
 import com.zanateh.scrapship.engine.systems.CleanupSystem;
 import com.zanateh.scrapship.engine.systems.DragAndDropSystem;
+import com.zanateh.scrapship.engine.systems.MessageDispatchSystem;
 import com.zanateh.scrapship.engine.systems.OrdnanceSystem;
 import com.zanateh.scrapship.engine.systems.PhysicsSystem;
 import com.zanateh.scrapship.engine.systems.PlayerControlSystem;
@@ -43,11 +45,13 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 	private World world;
 	private PooledEngine engine;
 	AshleyPlayStateInputProcessor stage;
+	EntityRegistry entityRegistry;
 	
 //	ArrayList<ComponentShip> shipList = new ArrayList<ComponentShip>();
 	
 	CameraManager cameraManager;
 	ShipFactory shipFactory;
+
 	
 	@Override
 	public void Init(ScrapShipGame game) throws RuntimeException {
@@ -58,6 +62,10 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		
 		engine = new PooledEngine();
 
+		entityRegistry = new EntityRegistry();
+		engine.addEntityListener(entityRegistry);
+		
+		engine.addSystem(new MessageDispatchSystem(entityRegistry));
 		engine.addSystem(new AISystem());
 		engine.addSystem(new PlayerControlSystem());
 		engine.addSystem(new ThrusterSystem());
@@ -69,6 +77,7 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		engine.addSystem(new CameraTargetSystem(cameraManager));
 		engine.addSystem(new RenderingSystem(game.getSpriteBatch(), cameraManager));
 		engine.addSystem(new CleanupSystem(engine));
+		
 
 		
 		stage = new AshleyPlayStateInputProcessor(this, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), game.getSpriteBatch(),
@@ -93,6 +102,11 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 			ShipHelper.setShipTransform(randomShip, 
 					new Vector2((float)rand.nextGaussian() * distRange, (float) rand.nextGaussian() * distRange ), 
 					rand.nextInt(360));
+			Entity randomComponent = shipFactory.createShip(ShipType.RandomShip);
+			ShipHelper.setShipTransform(randomComponent, 
+					new Vector2((float)rand.nextGaussian() * distRange, (float) rand.nextGaussian() * distRange ), 
+					rand.nextInt(360));
+			
 		}
 	}
 		

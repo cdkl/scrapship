@@ -35,6 +35,7 @@ import com.zanateh.scrapship.engine.components.WeaponMountComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 import com.zanateh.scrapship.engine.components.subcomponents.Hitbox;
 import com.zanateh.scrapship.engine.components.subcomponents.WeaponMount;
+import com.zanateh.scrapship.engine.entity.ScrapEntity;
 
 public class ShipHelper {
 	
@@ -57,7 +58,7 @@ public class ShipHelper {
 	}
 	
 	public static Entity createShipEntity(Engine engine, World world, boolean addAI) {
-		Entity e = new Entity();
+		Entity e = new ScrapEntity();
 
 		e.add(new ShipComponent());
 		e.add(new TransformComponent());
@@ -86,7 +87,7 @@ public class ShipHelper {
 	}
 
 	public static Entity createPodEntity(Engine engine, World world) {
-		Entity e = new Entity();
+		Entity e = new ScrapEntity();
 
 		PodComponent pc = new PodComponent();
 		pc.radius = podRadius;
