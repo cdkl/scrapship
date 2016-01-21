@@ -6,35 +6,31 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.utils.Array;
 import com.zanateh.scrapship.engine.components.NullComponent;
-import com.zanateh.scrapship.engine.components.PlayerControlComponent;
-import com.zanateh.scrapship.engine.components.PodComponent;
-import com.zanateh.scrapship.engine.components.ShipAIComponent;
-import com.zanateh.scrapship.engine.entity.EntityRegistry;
-import com.zanateh.scrapship.engine.entity.ScrapEntity;
 import com.zanateh.scrapship.engine.message.Message;
+import com.zanateh.scrapship.engine.message.MessageHandler;
 
 public class MessageDispatchSystem extends IteratingSystem {
 
-	EntityRegistry entityRegistry;
-	
 	static MessageDispatchSystem instance = null;
 	
 	Array<Message> messages = new Array<Message>(false, 1024);
 	
-	private ComponentMapper<ShipAIComponent> shipAIMapper = ComponentMapper.getFor(ShipAIComponent.class);
-	private ComponentMapper<PodComponent> podMapper = ComponentMapper.getFor(PodComponent.class);
+	Array<MessageHandler> handlers = new Array<MessageHandler>();
 	
-	public MessageDispatchSystem(EntityRegistry entityRegistry) {
+	public MessageDispatchSystem() {
 		super(Family.all(NullComponent.class).get());
 		if(instance != null) {
 			throw new RuntimeException("Cannot create more than one MessageDispatchSystem");
 		}
 		instance = this;
-		this.entityRegistry = entityRegistry;
 	}
 	
 	public static MessageDispatchSystem instance() {
 		return instance;
+	}
+	
+	public void addHandler(MessageHandler handler) {
+		handlers.add(handler);
 	}
 	
 	public void dispatchMessage(Message message) {
@@ -64,28 +60,14 @@ public class MessageDispatchSystem extends IteratingSystem {
 	}
 	
 	boolean processMessage(Message message) {
-		ScrapEntity se = entityRegistry.getEntity(message.receiver);
-		if( se != null ) {
-			// If entity recipient is a pod, forward the message to the ship.
-			PodComponent pod = podMapper.get(se);
-			if(pod != null) {
-				return doProcessMessage(pod.ship, message);
+		for( MessageHandler handler : handlers ) {
+			if(handler.handle(message)) {
+				return true;
 			}
-
-			return doProcessMessage(se, message);
 		}
 		return false;
 	}
 	
-	boolean doProcessMessage(Entity se, Message message) {
-		
-		ShipAIComponent ai = shipAIMapper.get(se);
-		if( ai != null && ai.shipStateMachine.processMessage(se, message)) {
-			return true;
-		}
-		
-		return false;
-	}
 	
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {

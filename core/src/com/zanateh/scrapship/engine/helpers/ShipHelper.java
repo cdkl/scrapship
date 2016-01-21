@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.zanateh.scrapship.engine.ai.ShipStateMachine;
 import com.zanateh.scrapship.engine.ai.WanderState;
 import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.CameraTargetComponent;
@@ -76,9 +77,8 @@ public class ShipHelper {
 		
 		if(addAI) {
 			e.add(new PlayerControlComponent());
-			ShipAIComponent ai = new ShipAIComponent();
-			ai.shipStateMachine.setCurrentState(new WanderState(e, ai.shipStateMachine));
-			e.add(ai);
+			e.add(new ShipAIComponent());
+			ShipStateMachine.setCurrentState(e, new WanderState(e));
 		}
 		
 		engine.addEntity(e);

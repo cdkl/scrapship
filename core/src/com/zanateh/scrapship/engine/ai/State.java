@@ -5,9 +5,7 @@ import com.zanateh.scrapship.engine.message.Message;
 
 public abstract class State {
 
-	protected ShipStateMachine stateMachine;
-	public State(ShipStateMachine stateMachine) {
-		this.stateMachine = stateMachine;
+	public State() {
 	}
 	
 	public abstract void enter(Entity entity);

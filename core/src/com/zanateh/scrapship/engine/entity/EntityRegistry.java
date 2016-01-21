@@ -11,6 +11,10 @@ public class EntityRegistry implements EntityListener {
 
 	LongMap<ScrapEntity> entityTable = new LongMap<ScrapEntity>();	
 	
+	static EntityRegistry instance = null;
+	private EntityRegistry() {
+	}
+	
 	@Override
 	public void entityAdded(Entity entity) {
 		if(entity instanceof ScrapEntity) {
@@ -30,6 +34,13 @@ public class EntityRegistry implements EntityListener {
 
 	public ScrapEntity getEntity(long ID) {
 		return entityTable.get(ID, null);
+	}
+
+	public static EntityRegistry instance() {
+		if(instance == null) {
+			instance = new EntityRegistry();
+		}
+		return instance;
 	}
 	
 }

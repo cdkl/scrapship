@@ -62,11 +62,15 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		
 		engine = new PooledEngine();
 
-		entityRegistry = new EntityRegistry();
-		engine.addEntityListener(entityRegistry);
+		engine.addEntityListener(EntityRegistry.instance());
 		
-		engine.addSystem(new MessageDispatchSystem(entityRegistry));
-		engine.addSystem(new AISystem());
+		MessageDispatchSystem mds = new MessageDispatchSystem();
+		engine.addSystem(mds);
+		AISystem ais = new AISystem();
+		
+		engine.addSystem(ais);
+		mds.addHandler(ais);
+		
 		engine.addSystem(new PlayerControlSystem());
 		engine.addSystem(new ThrusterSystem());
 		engine.addSystem(new PhysicsSystem(world));

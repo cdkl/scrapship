@@ -25,8 +25,7 @@ public class WanderState extends State {
 	private static ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 	private static ComponentMapper<PlayerControlComponent> controlMapper = ComponentMapper.getFor(PlayerControlComponent.class);
 	
-	public WanderState(Entity entity, ShipStateMachine stateMachine) {
-		super(stateMachine);
+	public WanderState(Entity entity) {
 		enter(entity);
 	}
 
@@ -50,7 +49,7 @@ public class WanderState extends State {
 		diff.sub(tc.position);
 		if( diff.len2() <= SEEK_TOLERANCE*SEEK_TOLERANCE) {
 			// If close enough, move into a new wander state.
-			stateMachine.changeState(entity, new WanderState(entity, stateMachine));
+			ShipStateMachine.changeState(entity, new WanderState(entity));
 		}
 		else {
 			PlayerControlComponent pcc = controlMapper.get(entity);
