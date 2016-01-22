@@ -10,8 +10,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.zanateh.scrapship.camera.CameraManager;
 import com.zanateh.scrapship.effects.ScrapshipParticleEffect;
 import com.zanateh.scrapship.engine.components.BeamComponent;
+import com.zanateh.scrapship.engine.components.EnvironmentComponent;
 import com.zanateh.scrapship.engine.components.FixtureComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.PodComponent;
@@ -31,6 +33,7 @@ public class RenderVisitor {
 	private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 	private ComponentMapper<BeamComponent> beamMapper = ComponentMapper.getFor(BeamComponent.class);
 	private ComponentMapper<ParticleEffectComponent> strikeEffectMapper = ComponentMapper.getFor(ParticleEffectComponent.class);
+	private ComponentMapper<EnvironmentComponent> environmentMapper = ComponentMapper.getFor(EnvironmentComponent.class);
 	
 	
 	private Sprite podSprite;
@@ -39,6 +42,7 @@ public class RenderVisitor {
 	private Sprite hardpointSprite;
 	private Sprite weaponMountSprite;
 	private Sprite laserbeamSprite;
+	private CameraManager camManager;
 	
 	private static final float beamWidthFactor = 0.005f;
 	
@@ -96,6 +100,22 @@ public class RenderVisitor {
 			renderStrikeEffects(sec.particleEffects, batch, delta);
 		}
 		
+		EnvironmentComponent ec = environmentMapper.get(entity);
+		if( ec != null ) {
+			renderEnvironment(entity, batch, ec, delta);
+		}
+		
+	}
+
+
+	private void renderEnvironment(Entity entity, SpriteBatch batch, EnvironmentComponent ec, float delta) {
+		float damp = 0.8f; 
+		Vector2 camPos = this.camManager.getCameraPos();
+		float zoom = this.camManager.getZoom();
+//		ec.background.setSize(100*zoom, 100*zoom);
+//		ec.background.setPosition(camPos.x * damp - camPos.x * (zoom-1), camPos.y * damp - camPos.y * (zoom-1)); //- (ec.background.getWidth()/(zoom*2)), (camPos.y * damp) - (ec.background.getHeight()/(zoom*2)));
+		ec.background.setPosition(camPos.x * damp - ec.background.getWidth()/2, camPos.y * damp - ec.background.getHeight()/2);
+		ec.background.draw(batch);
 	}
 
 
@@ -204,5 +224,10 @@ public class RenderVisitor {
 		
 		podSprite.setRotation(tc.rotation);
 		podSprite.draw(batch);
+	}
+
+
+	public void setCameraManager(CameraManager camManager) {
+		this.camManager = camManager;	
 	}
 }

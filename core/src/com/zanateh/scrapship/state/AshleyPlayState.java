@@ -5,6 +5,8 @@ import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -16,8 +18,10 @@ import com.zanateh.scrapship.ScrapShipGame;
 import com.zanateh.scrapship.camera.CameraManager;
 import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.CameraTargetComponent;
+import com.zanateh.scrapship.engine.components.EnvironmentComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.PlayerControlComponent;
+import com.zanateh.scrapship.engine.components.RenderComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
@@ -91,6 +95,18 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		Gdx.input.setInputProcessor(stage);
 		
 		shipFactory = new ShipFactory(engine, world);
+		
+		Entity environmentEntity = new Entity();
+		EnvironmentComponent ec = new EnvironmentComponent();
+		ec.background = new Sprite(new Texture(Gdx.files.internal("img/ion_pillar___fractal_resource_by_packeranatic-d3lgcci.png")));
+		//ec.background = new Sprite(new Texture(Gdx.files.internal("img/libgdx.png")));
+		ec.background.setOrigin(ec.background.getWidth()/2, ec.background.getHeight()/2);
+		//ec.background.setScale(0.999f);
+		ec.background.setSize(100,100);
+		ec.background.setPosition(-ec.background.getWidth()/2, -ec.background.getHeight()/2);
+		environmentEntity.add(ec);
+		environmentEntity.add(new RenderComponent());
+		engine.addEntity(environmentEntity);
 		
 		Entity e = shipFactory.createShip(ShipType.PlayerShip);
 		PlayerControlComponent pcc = e.getComponent(PlayerControlComponent.class);
