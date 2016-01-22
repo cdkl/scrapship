@@ -11,6 +11,7 @@ public class DesktopLauncher {
 		config.fullscreen = false;
 		config.width = 1280;
 		config.height = 720;
+		//config.samples = 16;
 		new LwjglApplication(new ScrapShipGame(), config);
 	}
 }

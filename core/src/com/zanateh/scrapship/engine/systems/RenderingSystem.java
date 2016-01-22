@@ -28,6 +28,7 @@ public class RenderingSystem extends IteratingSystem {
 		
 		this.batch = batch;
 		this.camManager = camManager;
+		shipRenderVisitor.setCameraManager(this.camManager);
 	}
 
 	@Override

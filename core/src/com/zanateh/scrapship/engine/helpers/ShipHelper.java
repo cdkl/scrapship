@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.zanateh.scrapship.engine.ai.ShipStateMachine;
 import com.zanateh.scrapship.engine.ai.WanderState;
 import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.CameraTargetComponent;
@@ -35,6 +36,7 @@ import com.zanateh.scrapship.engine.components.WeaponMountComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 import com.zanateh.scrapship.engine.components.subcomponents.Hitbox;
 import com.zanateh.scrapship.engine.components.subcomponents.WeaponMount;
+import com.zanateh.scrapship.engine.entity.ScrapEntity;
 
 public class ShipHelper {
 	
@@ -57,7 +59,7 @@ public class ShipHelper {
 	}
 	
 	public static Entity createShipEntity(Engine engine, World world, boolean addAI) {
-		Entity e = new Entity();
+		Entity e = new ScrapEntity();
 
 		e.add(new ShipComponent());
 		e.add(new TransformComponent());
@@ -75,9 +77,8 @@ public class ShipHelper {
 		
 		if(addAI) {
 			e.add(new PlayerControlComponent());
-			ShipAIComponent ai = new ShipAIComponent();
-			ai.shipStateMachine.setCurrentState(new WanderState(e, ai.shipStateMachine));
-			e.add(ai);
+			e.add(new ShipAIComponent());
+			ShipStateMachine.setCurrentState(e, new WanderState(e));
 		}
 		
 		engine.addEntity(e);
@@ -86,7 +87,7 @@ public class ShipHelper {
 	}
 
 	public static Entity createPodEntity(Engine engine, World world) {
-		Entity e = new Entity();
+		Entity e = new ScrapEntity();
 
 		PodComponent pc = new PodComponent();
 		pc.radius = podRadius;
@@ -354,6 +355,14 @@ public class ShipHelper {
 		Vector2 position = bodyComponent.body.getPosition();
 		transformComponent.rotation = bodyComponent.body.getAngle() * MathUtils.radiansToDegrees;
 		transformComponent.position.set(position);
+	}
+	
+	public static Entity getShipForPodEntity(Entity podEntity) {
+		PodComponent pc = podMapper.get(podEntity);
+		if( pc == null ) {
+			throw new RuntimeException("Cannot get ship: entity provided is not a pod.");
+		}
+		return pc.ship;
 	}
 	
 }

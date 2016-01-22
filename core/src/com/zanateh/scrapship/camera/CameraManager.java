@@ -49,6 +49,11 @@ public class CameraManager {
 		this.cameraPos.set(cameraPos);
 	}
 	
+	public Vector2 getCameraPos() {
+		OrthographicCamera cam = game.getCamera();
+		return new Vector2(cam.position.x, cam.position.y);
+	}
+	
 	public void setupRenderCamera()
 	{
 		if(this.cameraMode == CameraMode.Target) {
@@ -108,6 +113,10 @@ public class CameraManager {
 				}
 			}
 		}
+	}
+
+	public float getZoom() {
+		return game.getCamera().zoom;
 	}
 
 

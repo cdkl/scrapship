@@ -5,6 +5,8 @@ import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -16,11 +18,14 @@ import com.zanateh.scrapship.ScrapShipGame;
 import com.zanateh.scrapship.camera.CameraManager;
 import com.zanateh.scrapship.engine.components.BodyComponent;
 import com.zanateh.scrapship.engine.components.CameraTargetComponent;
+import com.zanateh.scrapship.engine.components.EnvironmentComponent;
 import com.zanateh.scrapship.engine.components.HardpointComponent;
 import com.zanateh.scrapship.engine.components.PlayerControlComponent;
+import com.zanateh.scrapship.engine.components.RenderComponent;
 import com.zanateh.scrapship.engine.components.ThrusterComponent;
 import com.zanateh.scrapship.engine.components.subcomponents.Hardpoint;
 import com.zanateh.scrapship.engine.components.subcomponents.Thruster;
+import com.zanateh.scrapship.engine.entity.EntityRegistry;
 import com.zanateh.scrapship.engine.helpers.HardpointHelper;
 import com.zanateh.scrapship.engine.helpers.ShipFactory;
 import com.zanateh.scrapship.engine.helpers.ShipHelper;
@@ -29,6 +34,7 @@ import com.zanateh.scrapship.engine.systems.AISystem;
 import com.zanateh.scrapship.engine.systems.CameraTargetSystem;
 import com.zanateh.scrapship.engine.systems.CleanupSystem;
 import com.zanateh.scrapship.engine.systems.DragAndDropSystem;
+import com.zanateh.scrapship.engine.systems.MessageDispatchSystem;
 import com.zanateh.scrapship.engine.systems.OrdnanceSystem;
 import com.zanateh.scrapship.engine.systems.PhysicsSystem;
 import com.zanateh.scrapship.engine.systems.PlayerControlSystem;
@@ -43,11 +49,13 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 	private World world;
 	private PooledEngine engine;
 	AshleyPlayStateInputProcessor stage;
+	EntityRegistry entityRegistry;
 	
 //	ArrayList<ComponentShip> shipList = new ArrayList<ComponentShip>();
 	
 	CameraManager cameraManager;
 	ShipFactory shipFactory;
+
 	
 	@Override
 	public void Init(ScrapShipGame game) throws RuntimeException {
@@ -58,7 +66,15 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		
 		engine = new PooledEngine();
 
-		engine.addSystem(new AISystem());
+		engine.addEntityListener(EntityRegistry.instance());
+		
+		MessageDispatchSystem mds = new MessageDispatchSystem();
+		engine.addSystem(mds);
+		AISystem ais = new AISystem();
+		
+		engine.addSystem(ais);
+		mds.addHandler(ais);
+		
 		engine.addSystem(new PlayerControlSystem());
 		engine.addSystem(new ThrusterSystem());
 		engine.addSystem(new PhysicsSystem(world));
@@ -69,6 +85,7 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		engine.addSystem(new CameraTargetSystem(cameraManager));
 		engine.addSystem(new RenderingSystem(game.getSpriteBatch(), cameraManager));
 		engine.addSystem(new CleanupSystem(engine));
+		
 
 		
 		stage = new AshleyPlayStateInputProcessor(this, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), game.getSpriteBatch(),
@@ -78,6 +95,18 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 		Gdx.input.setInputProcessor(stage);
 		
 		shipFactory = new ShipFactory(engine, world);
+		
+		Entity environmentEntity = new Entity();
+		EnvironmentComponent ec = new EnvironmentComponent();
+		ec.background = new Sprite(new Texture(Gdx.files.internal("img/ion_pillar___fractal_resource_by_packeranatic-d3lgcci.png")));
+		//ec.background = new Sprite(new Texture(Gdx.files.internal("img/libgdx.png")));
+		ec.background.setOrigin(ec.background.getWidth()/2, ec.background.getHeight()/2);
+		//ec.background.setScale(0.999f);
+		ec.background.setSize(100,100);
+		ec.background.setPosition(-ec.background.getWidth()/2, -ec.background.getHeight()/2);
+		environmentEntity.add(ec);
+		environmentEntity.add(new RenderComponent());
+		engine.addEntity(environmentEntity);
 		
 		Entity e = shipFactory.createShip(ShipType.PlayerShip);
 		PlayerControlComponent pcc = e.getComponent(PlayerControlComponent.class);
@@ -93,6 +122,11 @@ public class AshleyPlayState extends GameState implements IWorldSource, IStageSo
 			ShipHelper.setShipTransform(randomShip, 
 					new Vector2((float)rand.nextGaussian() * distRange, (float) rand.nextGaussian() * distRange ), 
 					rand.nextInt(360));
+			Entity randomComponent = shipFactory.createShip(ShipType.RandomShip);
+			ShipHelper.setShipTransform(randomComponent, 
+					new Vector2((float)rand.nextGaussian() * distRange, (float) rand.nextGaussian() * distRange ), 
+					rand.nextInt(360));
+			
 		}
 	}
 		

@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffectPool.PooledEffect;
 import com.badlogic.gdx.math.Vector2;
 import com.zanateh.scrapship.engine.components.ParticleEffectComponent;
 import com.zanateh.scrapship.engine.components.RenderComponent;
+import com.zanateh.scrapship.engine.entity.ScrapEntity;
 
 public class ScrapshipParticleEffect {
 	
@@ -62,7 +63,7 @@ public class ScrapshipParticleEffect {
 		ImmutableArray<Entity> strikeEntities = engine.getEntitiesFor(Family.all(ParticleEffectComponent.class).get());
 		Entity strikeEntity;
 		if(strikeEntities.size() == 0 ){
-			strikeEntity = new Entity();
+			strikeEntity = new ScrapEntity();
 			strikeEntity.add(new ParticleEffectComponent());
 			strikeEntity.add(new RenderComponent());
 			engine.addEntity(strikeEntity);
