@@ -21,6 +21,7 @@ import com.zanateh.scrapship.engine.components.TransformComponent;
 import com.zanateh.scrapship.engine.entity.ScrapEntity;
 import com.zanateh.scrapship.engine.helpers.DamageHelper;
 import com.zanateh.scrapship.engine.helpers.IntersectHelper;
+import com.zanateh.scrapship.engine.helpers.ShipHelper;
 import com.zanateh.scrapship.engine.message.AttackMessage;
 
 public class OrdnanceSystem extends IteratingSystem {
@@ -70,7 +71,10 @@ public class OrdnanceSystem extends IteratingSystem {
 					bc.strike = closestHit;
 					
 					OrdnanceComponent ordnanceComponent = ordnanceMapper.get(entity);
-					new AttackMessage(((ScrapEntity)entity).ID(), ((ScrapEntity)closestEntity).ID(), 0f, ordnanceComponent.firingEntity).send();
+					new AttackMessage(((ScrapEntity)entity).ID(), 
+									  ((ScrapEntity)closestEntity).ID(), 0f, 
+									  ShipHelper.getShipForPodEntity(ordnanceComponent.firingEntity))
+					.send();
 					
 					// Create the drawable effect for a strike
 					ScrapshipParticleEffect.createStrikeEffect(engine, closestHit);

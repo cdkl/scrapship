@@ -357,6 +357,14 @@ public class ShipHelper {
 		transformComponent.position.set(position);
 	}
 	
+	public static Entity getShipForPodEntity(Entity podEntity) {
+		PodComponent pc = podMapper.get(podEntity);
+		if( pc == null ) {
+			throw new RuntimeException("Cannot get ship: entity provided is not a pod.");
+		}
+		return pc.ship;
+	}
+	
 }
 
 
